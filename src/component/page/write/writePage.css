@@ -1,0 +1,15 @@
+.container-write{
+    width: 100%;
+    height: 100%;
+}.background-write{
+    width: 100%;
+    height: 150%;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 270px auto;
+}.text-editer{
+    margin-top: 150px;
+    width: 50%;
+
+}
