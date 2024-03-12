@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import  themeSlice  from './slices/theme'
+import mouseXYSlice from './slices/mouseXY'
 
 export const store = configureStore({
   reducer: {
-    theme : themeSlice
+    theme : themeSlice,
+    mouseXY: mouseXYSlice
   },
 })
 

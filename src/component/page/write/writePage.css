@@ -12,4 +12,9 @@
     margin-top: 150px;
     width: 50%;
 
+}.outFrame-option{
+    width: 80px;
+    height:100px;
+    background-color: black;
+    position: absolute;
 }

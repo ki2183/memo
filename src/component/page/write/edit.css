@@ -7,6 +7,7 @@
 }
 .title-edit{
     width: 100%;
+    padding-left: 30px;
     /* height: 4rem; */
     font-size: 2rem;
     outline: none;
@@ -33,6 +34,12 @@
 .memo{
     display: grid;
     grid-template-columns: 30px auto 30px;
+    min-height: 30px;
+    align-items: center;
+}
+.memo>div{
+    width: 100%;
+    height: 100%;
 }
 .memo>textarea{
     box-sizing: border-box;
@@ -40,6 +47,18 @@
     resize: none;
     outline: none;
     overflow-y: hidden;
-    font-size: 1rem;
-    padding-top: 1rem;
+    font-size: 1.2rem;
+    height: auto;
+    /* padding-top: 1rem; */
+    text-align: start;
+    vertical-align: middle;
+}.insert-url{
+    box-sizing: border-box;
+    width: 100%;
+    height: 0px;
+    outline: none;
+    padding-left: 30px;
+    padding-right: 30px;
+    max-width: 720px;
+    overflow: hidden;
 }

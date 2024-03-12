@@ -49,7 +49,7 @@ function imgHooks(
 
     }
 }
-
+ 
 export type imgsReturnType = {
     addImg:(imgs:string,idx:number)=>void
     delImg:(imgs:string,idx:number)=>void
@@ -57,3 +57,10 @@ export type imgsReturnType = {
 }
 
 export default imgHooks
+
+export const abstractURL = (e:DragEvent)=> {
+    e.preventDefault()
+
+    const file:FileList | null = e.dataTransfer ? e.dataTransfer.files : null
+    
+}

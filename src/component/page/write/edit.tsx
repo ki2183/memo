@@ -1,13 +1,26 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import "./edit.css"
 import editer, { editerReturnType } from "../../hooks/editer/edithooks"
 import KeyboardHandlerHooks from "../../hooks/editer/textareahooks";
 import imgHooks, { imgsReturnType } from "../../hooks/editer/imgshooks";
+import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { HTML5Backend, NativeTypes } from "react-dnd-html5-backend";
+import Modal from "react-modal";
+import { customModalStyles } from "./editModel";
+import { useAppSelector } from "../../store/hooks";
+import { useDispatch } from "react-redux";
+import { getXY, mouseXYType } from "../../store/slices/mouseXY";
 
 export type imgsType = {
     url:string,
     idx:number
 }
+
+const adjustTextAreaHeight = (element:HTMLTextAreaElement) => {
+    element.style.height = '0px'
+    const scrollHeight = element.scrollHeight;
+    element.style.height = scrollHeight + 'px'
+};    
 
 function Edit(){
 
@@ -16,6 +29,7 @@ function Edit(){
     const [imgs,setImgs] = useState<imgsType[]>([])
     const textsRef = useRef<Array<HTMLTextAreaElement|null>>([]) //for animation
     const [forNewTextFocusing,setForNewTextFocusing] = useState<boolean>(false)
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
     const edit = editer(texts, setTexts) as editerReturnType
     const imghooks = imgHooks(imgs,setImgs) as imgsReturnType
 
@@ -25,11 +39,7 @@ function Edit(){
         setTitle(e.target.value)
         adjustTextAreaHeight(e.target);
     }
-
-    const adjustTextAreaHeight = (element:HTMLTextAreaElement) => {
-        element.style.height = 'auto'
-        element.style.height = element.scrollHeight + 'px'
-    };    
+  
     //#endregion
 
     const addText_sign = () =>{
@@ -43,42 +53,54 @@ function Edit(){
     useEffect(()=>{console.log(imgs)},[imgs])
 
     return (
-        <div className="container-edit">
-            <div className="frame-edit">
-                <div/>
-                <div>
-                    <textarea spellCheck="false" className="title-edit edit-textarea-title" placeholder="제목을 입력하세요." onChange={titleChangeHandler}/>
+        <DndProvider backend={HTML5Backend}>
+            <div className="container-edit">
+                <div className="frame-edit">
+                    <div/>
+                    <div>
+                        <textarea spellCheck="false" className="title-edit edit-textarea-title" placeholder="제목을 입력하세요." onChange={titleChangeHandler}/>
+                        <Modal
+                            isOpen={modalOpen}
+                            onRequestClose={() => setModalOpen(false)}
+                            style={customModalStyles}
+                            ariaHideApp={false}
+                            contentLabel="Pop up Message"
+                            shouldCloseOnOverlayClick={true}
+                        >
+                        </Modal>
+                        <div className="frame-memos">
+                            {
+                                (texts.length > 0) && texts.map((item:string,idx:number)=>{
 
-                    <div className="frame-memos">
-                        {
-                            (texts.length > 0) && texts.map((item:string,idx:number)=>{
+                                    const max = texts.length-1
 
-                                const max = texts.length-1
+                                    return (
+                                        <Memo 
+                                            key={idx}
+                                            idx={idx}
+                                            max={max}
+                                            edit={edit}
+                                            imgs={imgs}
+                                            imgshooks={imghooks}
+                                            texts={texts}
+                                            textsRef={textsRef}
+                                            addText_sign={addText_sign}
+                                        />
+                                    )
 
-                                return (
-                                    <Memo 
-                                        key={idx}
-                                        idx={idx}
-                                        max={max}
-                                        edit={edit}
-                                        imgs={imgs}
-                                        imgshooks={imghooks}
-                                        texts={texts}
-                                        textsRef={textsRef}
-                                        addText_sign={addText_sign}
-                                    />
-                                )
-
-                            })
-                        }
+                                })
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </DndProvider>
     )
 }
 
 export default Edit
+/** need memo types **/
+// #region
 
 export type memoType = {
     idx:number
@@ -93,6 +115,16 @@ interface memoInterface extends memoType {
     imgshooks:imgsReturnType,
     imgs:imgsType[]
 }
+
+export type onlineImgType = {
+    dataTransfer: {
+        files: FileList;
+        items: DataTransferItemList;
+      };
+}
+
+// #endregion
+
 //atom
 function Memo({  
     idx,
@@ -105,35 +137,52 @@ function Memo({
     addText_sign,
 }:memoInterface){
 
+    const this_idx_imgs = imgs.filter(el => el.idx === idx)
+    const mouseXY = useAppSelector( state=> state.mouseXY)
+    const dispatch = useDispatch()
+    /* 초기 */
+
+    useLayoutEffect(()=>{
+        if(textsRef.current && textsRef.current[idx] !== null)
+            adjustTextAreaHeight(textsRef.current[idx]!)
+    },[])
+
+    useEffect(()=>{console.log(mouseXY)},[mouseXY])
+
+    /* 핸들러 */
+    //#region
     const memoHandler = (e:React.ChangeEvent<HTMLTextAreaElement>) =>{
         e.preventDefault()
         edit.updateTexts(idx,e.target.value)
+        adjustTextAreaHeight(e.target)
+    } 
+
+    function getMouseXY(e:React.MouseEvent<HTMLDivElement>):void {
+        e.preventDefault()
+        console.log("마우스 좌표")
+        console.log(e.clientX)
+        console.log(e.clientY)
+        const xy = {
+            x:e.clientX,
+            y:e.clientY
+        }
+        dispatch(getXY(xy))
     }
 
-    // useEffect(() => {
-    //     textsRef.current[idx]?.addEventListener('drop', handleDrop); // drop 이벤트 리스너 추가
-    
-    //     return () => {
-    //         textsRef.current[idx]?.removeEventListener('drop', handleDrop);
-    //     };
-    // }, [idx]);
+    const [,img_drop_toText] = useDrop({
+        accept:[NativeTypes.FILE],
+        drop(item:onlineImgType, monitor) {
+            console.log(item.dataTransfer)
+            alert(item)
+        },
+    })
+    //#endregion
 
-    useEffect(() => {
 
-        const handle_drop_img = (e:DragEvent) => imgshooks.handleDropImg(e,idx)
-
-        textsRef.current[idx]?.addEventListener('drop', handle_drop_img)
-    
-        return () => {
-            textsRef.current[idx]?.removeEventListener('drop', handle_drop_img)
-        };
-    }, [idx]);
-
-    const this_idx_imgs = imgs.filter(el => el.idx === idx)
 
     return (
         <>
-            <div className="memo">
+            <div className="memo" ref={img_drop_toText}>
                 <div/>
                 <textarea 
                     className="edit-text"
@@ -155,17 +204,70 @@ function Memo({
                 />
                 <div onClick={e=>{
                     e.preventDefault()
-                    edit.deleteTexts(idx)
-                }}></div>
+                    getMouseXY(e)
+                    // edit.deleteTexts(idx)
+                }}>
+                </div>
+            </div>
+            <div className="insert-url">
+                <input type="text" className="insert-url-input bg-slate-300"/>
             </div>
 
             {
                 (this_idx_imgs && this_idx_imgs.length > 0) && (this_idx_imgs.map((item,idx_)=>(
-                    <img src={item.url} key={idx_} onClick={e=>{
-                        imgshooks.delImg(item.url,idx)
-                    }}/>
+                    <MemoImg 
+                        url={item.url} 
+                        imgshooks={imgshooks}
+                        key={idx}
+                    />
                 )))
             }
         </>
+    )
+}
+
+type MemoImgType = {
+    url:string
+    imgshooks: imgsReturnType
+}
+
+function MemoImg({url,imgshooks}:MemoImgType){
+
+    const combinedRef = useRef(null)
+
+    // const [{ isDragging }, drag] = useDrag(() => ({
+    //     type: 'image', // 드래그 가능한 항목의 타입을 'image'로 지정
+    //     item: { type: 'image', url }, // 드래그하는 항목에는 이미지 URL이 포함됩니다.
+    //     collect: (monitor) => ({
+    //       isDragging: !!monitor.isDragging(),
+    //     }),
+    //   }));
+    
+    //   const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    //     accept: 'image',
+    //     drop: (item, monitor) => {
+    //       console.log('Image dropped:', item);''
+    //       alert('Image dropped!');
+    //     }, 
+    //     collect: (monitor) => ({
+    //       isOver: !!monitor.isOver(),
+    //       canDrop: !!monitor.canDrop(),
+    //     }),
+    //   }));
+
+    //   const [,urlDrop] = useDrop({
+    //     accept:[NativeTypes.FILE],
+    //     drop(file:{files:FileList}){
+    //         console.log(file)
+    //     }
+            
+    //     })
+
+    //   drag(drop(urlDrop(combinedRef)))
+
+
+
+    return (
+        <img src={url} ref={combinedRef}/>
     )
 }
