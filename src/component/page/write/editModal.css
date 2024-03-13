@@ -1,0 +1,21 @@
+.container-option-modal{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.041);
+    position: fixed;
+    left:0;
+    top:0;
+}.frame-option-modal{
+    position: absolute;
+    background-color: black;
+    background: linear-gradient(35deg, #d2d2d2, white);
+    box-shadow: 4px 4px 4px solid #666;
+    display: flex;
+    flex-direction: column;
+    width: 112px;
+    height: auto;
+    border-radius: 5px;
+}.frame-option-modal>li{
+    width: 112px;
+    height: 35px;
+}

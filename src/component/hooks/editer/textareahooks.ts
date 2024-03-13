@@ -2,15 +2,19 @@ import { memoType } from "../../page/write/edit"
 
 interface key_handler_hooks_interface extends memoType {
     e:React.KeyboardEvent<HTMLTextAreaElement>,
+    text:string[],
+    delText_: (idx_: number) => void,
+    addText_: ()=>void,
 }
 
 function KeyboardHandlerHooks({
     idx,
     max,
-    texts,
-    edit,
+    text,
     textsRef,
     addText_sign,
+    delText_,
+    addText_,
     e,  
 }:key_handler_hooks_interface){ 
     const textAreaManagement = TextAreaManagement(textsRef.current[idx])
@@ -20,7 +24,8 @@ function KeyboardHandlerHooks({
         else if(e.key === "Enter"){ //add -> focusFunc
             e.preventDefault()
             if(idx === max){
-                edit.newAddTexts()
+                // edit.newAddTexts()
+                addText_()
                 addText_sign()
                 return
             }
@@ -42,11 +47,12 @@ function KeyboardHandlerHooks({
                 
             }
         }else if(e.key === "Backspace"){
-            console.log('back')
-            if(idx !== 0 && texts[idx] === ""){ //del -> focus
+        
+            if(idx !== 0 && text[idx] === ""){ //del -> focus
                 e.preventDefault()
                 textsRef.current[idx-1]?.focus()
-                edit.deleteTexts(idx)
+                // edit.deleteTexts(idx)
+                delText_(idx)
             }
         }
 }

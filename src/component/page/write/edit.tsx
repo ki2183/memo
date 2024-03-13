@@ -6,10 +6,11 @@ import imgHooks, { imgsReturnType } from "../../hooks/editer/imgshooks";
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend, NativeTypes } from "react-dnd-html5-backend";
 import Modal from "react-modal";
-import { customModalStyles } from "./editModel";
+import OptionModal, { customModalStyles } from "./editModal";
 import { useAppSelector } from "../../store/hooks";
 import { useDispatch } from "react-redux";
 import { getXY, mouseXYType } from "../../store/slices/mouseXY";
+import { addText, delText, writeText } from "../../store/slices/text";
 
 export type imgsType = {
     url:string,
@@ -25,14 +26,18 @@ const adjustTextAreaHeight = (element:HTMLTextAreaElement) => {
 function Edit(){
 
     const [title, setTitle] = useState<string>("") //제목
-    const [texts, setTexts] = useState<string[]>([""]); //텍스트
     const [imgs,setImgs] = useState<imgsType[]>([])
     const textsRef = useRef<Array<HTMLTextAreaElement|null>>([]) //for animation
     const [forNewTextFocusing,setForNewTextFocusing] = useState<boolean>(false)
     const [modalOpen, setModalOpen] = useState<boolean>(false);
-    const edit = editer(texts, setTexts) as editerReturnType
     const imghooks = imgHooks(imgs,setImgs) as imgsReturnType
 
+     /* redux value */
+    //#region
+
+    const text = useAppSelector(state => state.text)
+
+    //#endregion
     /* for_title_height */
     //#region
     const titleChangeHandler = (e:React.ChangeEvent<HTMLTextAreaElement>) =>{
@@ -47,7 +52,7 @@ function Edit(){
     }
 
     useEffect(()=>{ 
-        textsRef.current[texts.length-1]?.focus()
+        textsRef.current[text.length-1]?.focus()
     },[forNewTextFocusing])
 
     useEffect(()=>{console.log(imgs)},[imgs])
@@ -56,33 +61,27 @@ function Edit(){
         <DndProvider backend={HTML5Backend}>
             <div className="container-edit">
                 <div className="frame-edit">
+                    <OptionModal 
+                        modalOpen={modalOpen} 
+                        setModalOpen={setModalOpen} 
+                    />
+
                     <div/>
                     <div>
                         <textarea spellCheck="false" className="title-edit edit-textarea-title" placeholder="제목을 입력하세요." onChange={titleChangeHandler}/>
-                        <Modal
-                            isOpen={modalOpen}
-                            onRequestClose={() => setModalOpen(false)}
-                            style={customModalStyles}
-                            ariaHideApp={false}
-                            contentLabel="Pop up Message"
-                            shouldCloseOnOverlayClick={true}
-                        >
-                        </Modal>
                         <div className="frame-memos">
                             {
-                                (texts.length > 0) && texts.map((item:string,idx:number)=>{
+                                (text.length > 0) && text.map((item:string,idx:number)=>{
 
-                                    const max = texts.length-1
+                                    const max = text.length-1
 
                                     return (
                                         <Memo 
                                             key={idx}
                                             idx={idx}
                                             max={max}
-                                            edit={edit}
-                                            imgs={imgs}
-                                            imgshooks={imghooks}
-                                            texts={texts}
+                                            modalOpen={modalOpen}
+                                            setModalOpen={setModalOpen}
                                             textsRef={textsRef}
                                             addText_sign={addText_sign}
                                         />
@@ -102,18 +101,22 @@ export default Edit
 /** need memo types **/
 // #region
 
+// const [modalOpen, setModalOpen] = useState<boolean>(false);
+
 export type memoType = {
     idx:number
     max:number
-    texts:string[]
-    edit:editerReturnType
-    textsRef:React.MutableRefObject<(HTMLTextAreaElement | null)[]>
+
     addText_sign:()=> void
+    textsRef:React.MutableRefObject<(HTMLTextAreaElement | null)[]>
+    
 }
 
 interface memoInterface extends memoType {
-    imgshooks:imgsReturnType,
-    imgs:imgsType[]
+    // imgshooks:imgsReturnType,
+    // imgs:imgsType[]
+    modalOpen:boolean
+    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export type onlineImgType = {
@@ -129,16 +132,14 @@ export type onlineImgType = {
 function Memo({  
     idx,
     max,
-    texts,
-    imgs,
-    edit,
-    imgshooks,
     textsRef,
+    modalOpen,
+    setModalOpen,
     addText_sign,
 }:memoInterface){
 
-    const this_idx_imgs = imgs.filter(el => el.idx === idx)
-    const mouseXY = useAppSelector( state=> state.mouseXY)
+    // const this_idx_imgs = imgs.filter(el => el.idx === idx)
+    const text = useAppSelector(state=> state.text)
     const dispatch = useDispatch()
     /* 초기 */
 
@@ -147,24 +148,38 @@ function Memo({
             adjustTextAreaHeight(textsRef.current[idx]!)
     },[])
 
-    useEffect(()=>{console.log(mouseXY)},[mouseXY])
-
-    /* 핸들러 */
+    /* handler */
     //#region
     const memoHandler = (e:React.ChangeEvent<HTMLTextAreaElement>) =>{
         e.preventDefault()
-        edit.updateTexts(idx,e.target.value)
+        dispatch(writeText({idx,newText:e.target.value}))
         adjustTextAreaHeight(e.target)
     } 
 
     function getMouseXY(e:React.MouseEvent<HTMLDivElement>):void {
         e.preventDefault()
-        console.log("마우스 좌표")
-        console.log(e.clientX)
-        console.log(e.clientY)
+        const divRect = e.currentTarget.getBoundingClientRect()
+
+        const divLeft = divRect.left;
+        const divTop = divRect.top;
+
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+
+        const relativeX = clientX - divLeft;
+        const relativeY = clientY - divTop;
+
+    console.log("상대적인 좌표:");
+    console.log("Left:", relativeX);
+    console.log("Top:", relativeY);
+
+        // console.log("마우스 좌표")
+        // console.log(e.clientX)
+        // console.log(e.clientY)
         const xy = {
             x:e.clientX,
-            y:e.clientY
+            y:e.clientY,
+            idx
         }
         dispatch(getXY(xy))
     }
@@ -179,6 +194,19 @@ function Memo({
     //#endregion
 
 
+    /* dispatch => function */
+    //#region
+
+    const delText_ = (idx_:number) => {
+        dispatch(delText({idx:idx_}))
+    }
+
+    const addText_ = () =>{
+        dispatch(addText())
+    }
+
+    //#endregion
+    useEffect(()=>{console.log(text)},[text])
 
     return (
         <>
@@ -191,20 +219,22 @@ function Memo({
                         KeyboardHandlerHooks({ //keyboard event hooks
                             idx, 
                             max, 
-                            texts, 
-                            edit, 
+                            text, 
                             textsRef, 
-                            addText_sign, 
+                            delText_,
+                            addText_, 
+                            addText_sign,
                             e,
                         })
                     }} 
                     onChange={memoHandler} 
                     ref={el=>textsRef.current[idx] = el}
-                    value={texts[idx]}
+                    value={text[idx]}
                 />
                 <div onClick={e=>{
                     e.preventDefault()
                     getMouseXY(e)
+                    setModalOpen(true)
                     // edit.deleteTexts(idx)
                 }}>
                 </div>
@@ -213,7 +243,7 @@ function Memo({
                 <input type="text" className="insert-url-input bg-slate-300"/>
             </div>
 
-            {
+            {/* {
                 (this_idx_imgs && this_idx_imgs.length > 0) && (this_idx_imgs.map((item,idx_)=>(
                     <MemoImg 
                         url={item.url} 
@@ -221,7 +251,7 @@ function Memo({
                         key={idx}
                     />
                 )))
-            }
+            } */}
         </>
     )
 }

@@ -4,12 +4,14 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type mouseXYType = {
     x:number,
-    y:number
+    y:number,
+    idx:number,
 }
 
 const initialState: mouseXYType  = {
     x:0,
-    y:0
+    y:0,
+    idx:0
 }
 
 export const mouseXYSlice = createSlice({
@@ -19,6 +21,7 @@ export const mouseXYSlice = createSlice({
     getXY: (state,action:PayloadAction<mouseXYType>) =>{
        state.x = action.payload.x
        state.y = action.payload.y 
+       state.idx = action.payload.idx
     }
   },
 })
