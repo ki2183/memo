@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Modal from "react-modal";
 import "./editModal.css"
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { delText } from "../../store/slices/text";
+import { getTFIdx } from "../../store/slices/urlInputCheck";
 
 export const customModalStyles: ReactModal.Styles = {
     overlay: {
@@ -11,6 +13,7 @@ export const customModalStyles: ReactModal.Styles = {
       zIndex: "10",
       position: "fixed",
       top: "0",
+      border:"0px",
       left: "0",
       overflow:"hidden"
     },
@@ -23,6 +26,7 @@ export const customModalStyles: ReactModal.Styles = {
       top: "0",
       left: "0",
       borderRadius: "10px",
+      border:"0px",
       backgroundColor: "transparent",
       justifyContent: "center",
     },
@@ -30,15 +34,30 @@ export const customModalStyles: ReactModal.Styles = {
   
   type OptionModalType = {
     modalOpen:boolean
+    update_URL_true: (idx: number) => void
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   }
 
-  function OptionModal({modalOpen,setModalOpen}:OptionModalType) {
+  function OptionModal({modalOpen,setModalOpen,update_URL_true}:OptionModalType) {
   
     const mouseXY = useAppSelector((state)=>state.mouseXY)
+    const modalBackGround = useAppSelector((state)=>state.theme.modalBackground)
+    const {idx,x,y} = mouseXY
+    const dispatch = useAppDispatch()
     const modelstyle = {
-      top:`${mouseXY.y}px`,
-      left:`${mouseXY.x}px`
+      top:`${y + 30}px`,
+      left:`${x}px`,
+      background:modalBackGround
+    }
+
+    const delEvent = (idx:number) => {
+      if(idx !== 0){
+        dispatch(delText({idx}))
+      }
+        
+    }
+    const imgEvent = (idx:number) => {
+      update_URL_true(idx)
     }
 
     return (
@@ -60,8 +79,8 @@ export const customModalStyles: ReactModal.Styles = {
               style={modelstyle}
               className="frame-option-modal"
             >
-              <li></li>
-              <li></li>
+              <ModalList idx={idx} title="삭제" spanName="delete" func={delEvent}/>
+              <ModalList idx={idx} title="사진" spanName="image" func={imgEvent}/>
             </ul>
           </div>
           
@@ -70,3 +89,28 @@ export const customModalStyles: ReactModal.Styles = {
     }
 
     export default OptionModal
+
+    type ModalListType = {
+      title:string,
+      spanName:string,
+      idx:number,
+      func:(idx:number)=>void
+    }
+
+    function ModalList({title,spanName,func,idx}:ModalListType){
+      return(
+        <li className="option-modal-li" onClick={e=>{
+          e.preventDefault()
+          func(idx)
+        }}>
+          <div>
+            <span className="material-symbols-outlined">
+              {spanName}
+            </span>
+            <span>
+              {title}
+            </span>
+          </div>
+        </li>
+      )
+    }

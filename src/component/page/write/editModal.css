@@ -1,21 +1,53 @@
+:root{
+    /* --modal-height: calc(var(var(--modal-width) * 0.625 / 0.5)); */
+    /* --modal-width/: 95px; */
+    --modal-height: 24px;
+    --modal-width: calc(var(--modal-height) * 1.6 * 2); 
+    --modal-width-total : 76.8px;
+    --modal-height-total : calc(var(--modal-width-total) * 1.6)
+}
+
 .container-option-modal{
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.041);
+    background-color: "transparent";
     position: fixed;
     left:0;
     top:0;
 }.frame-option-modal{
     position: absolute;
     background-color: black;
-    background: linear-gradient(35deg, #d2d2d2, white);
-    box-shadow: 4px 4px 4px solid #666;
+    background: linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245));
+    box-shadow: 8px 8px 15px #7575752e;
     display: flex;
     flex-direction: column;
-    width: 112px;
-    height: auto;
     border-radius: 5px;
-}.frame-option-modal>li{
-    width: 112px;
-    height: 35px;
+    transform: translate( calc(-1 * var(--modal-width) + 30px),0);
+    overflow:hidden;
+}
+
+.frame-option-modal>li{
+    cursor: pointer;
+}.frame-option-modal>li:hover{
+    background-color: #8a8a8a83;
+}
+.option-modal-li>div{
+    height: var(--modal-height);
+    width: var(--modal-width);
+    font-weight: 300;
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+}.option-modal-li>div>span{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    margin-right: 9px;
+}.option-modal-li>div>span:nth-child(1){
+    font-size: 1.35rem;
+    font-weight: 300;
 }

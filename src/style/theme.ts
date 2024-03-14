@@ -5,7 +5,8 @@ export const lightTheme = {
     toggleColor: "#cbb5dc",
     navColor:"#00000004",
     navBorder:"#0000001a",
-    theme:"light"
+    theme:"light",
+    modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))"
   };
   
   export const darkTheme = {
@@ -15,7 +16,8 @@ export const lightTheme = {
     toggleColor: "#e0cde3",
     navColor:"#ffffff04",
     navBorder:"#ffffff1a",
-    theme:"dark"
+    theme:"dark",
+    modalBackground: "linear-gradient(35deg, #6f6f6f, rgb(61 61 61))"
   };
   
   export type themeType = typeof lightTheme

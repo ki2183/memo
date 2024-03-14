@@ -11,21 +11,26 @@ export const themeSlice = createSlice({
   reducers: {
     changeTheme: (state) =>{
         if(state.theme === 'light'){
-            state.bgColor = darkTheme.bgColor
-            state.borderColor = darkTheme.borderColor
-            state.textColor = darkTheme.textColor
-            state.toggleColor = darkTheme.toggleColor
-            state.navColor = darkTheme.navColor
-            state.navBorder = darkTheme.navBorder
-            state.theme = darkTheme.theme
+            const {bgColor,borderColor,modalBackground,navBorder,navColor,textColor,theme,toggleColor} = darkTheme
+            state.bgColor = bgColor
+            state.borderColor = borderColor
+            state.textColor = textColor
+            state.toggleColor = toggleColor
+            state.navColor = navColor
+            state.navBorder = navBorder
+            state.theme = theme
+            state.modalBackground = modalBackground
+
         }else{
-            state.bgColor = lightTheme.bgColor
-            state.borderColor = lightTheme.borderColor
-            state.textColor = lightTheme.textColor
-            state.toggleColor = lightTheme.toggleColor
-            state.navColor = lightTheme.navColor
-            state.navBorder = lightTheme.navBorder
-            state.theme = lightTheme.theme
+          const {bgColor,borderColor,modalBackground,navBorder,navColor,textColor,theme,toggleColor} = lightTheme
+          state.bgColor = bgColor
+          state.borderColor = borderColor
+          state.textColor = textColor
+          state.toggleColor = toggleColor
+          state.navColor = navColor
+          state.navBorder = navBorder
+          state.theme = theme
+          state.modalBackground = modalBackground
         }
     }
   },

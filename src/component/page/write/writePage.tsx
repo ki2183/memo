@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import Nav from "../../components/nav/nav"
 import './writePage.css'
 import { text } from "stream/consumers"
-import EditNav from "../../components/editerNav"
+import EditNav, { EditNavTop } from "../../components/editerNav"
 import Edit from "./edit"
 
 function WritePage(){

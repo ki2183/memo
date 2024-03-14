@@ -1,5 +1,5 @@
 :root{
-    --theme-button-width : 3rem
+    --theme-button-width : 2rem
 }
 
 .container-edit-nav-left{
@@ -13,11 +13,11 @@
     box-sizing: border-box;
 
 }.container-edit-nav-top{
+    position: absolute;
     padding-right: 2rem;
     box-sizing: border-box;
-    width: 100vw;
+    width: 100%;
     height: 101.25px;
-    position: fixed;
     left: 0;
     top: 0;
     display: flex;
@@ -35,7 +35,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    border: 1px solid rgba(77, 77, 77, 0.342);
+    border: 1px solid rgba(77, 77, 77, 0.164);
 }
 .frame-theme>div{
     width:calc(var(--theme-button-width) * 0.8);
@@ -44,6 +44,7 @@
     border-radius: 100%;
     margin-left: 3px;
     margin-right:3px;
+    margin-top: 1px;
     border: 1px solid rgba(77, 77, 77, 0.342);
 }
 .img-theme{

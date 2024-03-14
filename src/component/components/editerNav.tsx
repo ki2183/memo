@@ -7,7 +7,7 @@ import { changeTheme } from "../store/slices/theme"
 function EditNav(){
     return(
         <>
-            <EditNavTop/>
+            {/* <EditNavTop/> */}
             <EditNavRight/>
         </>
     )
@@ -26,7 +26,7 @@ function EditNavRight(){
     )
 }
 
-function EditNavTop(){ 
+export function EditNavTop(){ 
 
     const [themeTween, setThemeTween] = useState<GSAPTween | null>();
     const theme = useAppSelector(state => state.theme)
@@ -36,7 +36,7 @@ function EditNavTop(){
         const tween = gsap.to('.theme-button', {
             duration: 0.3,
             ease: "back.inOut",
-            x: "-95%",
+            x: "-85%",
         });
         setThemeTween(tween);
     }, []);

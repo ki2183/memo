@@ -6,12 +6,14 @@ export type mouseXYType = {
     x:number,
     y:number,
     idx:number,
+    height:number,
 }
 
 const initialState: mouseXYType  = {
     x:0,
     y:0,
-    idx:0
+    idx:0,
+    height:0
 }
 
 export const mouseXYSlice = createSlice({
@@ -19,9 +21,11 @@ export const mouseXYSlice = createSlice({
   initialState,
   reducers: {
     getXY: (state,action:PayloadAction<mouseXYType>) =>{
-       state.x = action.payload.x
-       state.y = action.payload.y 
-       state.idx = action.payload.idx
+      const {x,y,idx,height} = action.payload
+       state.x = x
+       state.y = y 
+       state.idx = idx
+       state.height = height
     }
   },
 })
