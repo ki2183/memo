@@ -17,7 +17,7 @@ export const lightTheme = {
     navColor:"#ffffff04",
     navBorder:"#ffffff1a",
     theme:"dark",
-    modalBackground: "linear-gradient(35deg, #6f6f6f, rgb(61 61 61))"
+    modalBackground: "linear-gradient(161deg, rgb(81, 81, 81), rgb(51, 51, 51))"
   };
   
   export type themeType = typeof lightTheme

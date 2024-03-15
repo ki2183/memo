@@ -8,12 +8,12 @@ import { HTML5Backend, NativeTypes } from "react-dnd-html5-backend";
 import OptionModal, { customModalStyles } from "./editModal";
 import { useAppSelector } from "../../store/hooks";
 import { useDispatch } from "react-redux";
-import { getXY, mouseXYType } from "../../store/slices/mouseXY";
 import { addText, delText, writeText } from "../../store/slices/text";
 import gsap from "gsap";
 import { EditNavTop } from "../../components/editerNav";
 import { pushNewImg } from "../../store/slices/imgs";
 import urlHooks from "../../hooks/editer/urlhooks";
+import { ModalInfoType, getModalInfo, modal_type } from "../../store/slices/modalInfo";
 
 export type imgsType = {
     url:string,
@@ -24,7 +24,21 @@ const adjustTextAreaHeight = (element:HTMLTextAreaElement) => {
     element.style.height = '0px'
     const scrollHeight = element.scrollHeight;
     element.style.height = scrollHeight + 'px'
-};    
+}
+
+function computeModalInfo(e:React.MouseEvent<HTMLDivElement>,idx:number,modal_type:modal_type):ModalInfoType{
+    e.preventDefault()
+    const divRect = e.currentTarget.getBoundingClientRect()
+    const modalInfo:ModalInfoType = {
+        x:divRect.left,
+        y:divRect.top,
+        idx,
+        height:divRect.height,
+        modal_type:modal_type
+    }
+
+    return modalInfo
+}
 
 export type img_url_tf_type = {
     tf:boolean,
@@ -189,6 +203,7 @@ function Memo({
             gsap.to(ref.current,{
                 display:"block",
                 height:"30px",
+                marginBottom:"4px",
                 duration:0.3,
                 ease:"power2.inOut"
             })
@@ -197,6 +212,7 @@ function Memo({
             tl.to(ref.current,{
                 height:"0px",
                 duration:0.3,
+                marginBottom:"0px",
                 ease:"power2.inOut"
             })
             tl.to(ref.current,{
@@ -221,26 +237,19 @@ function Memo({
         adjustTextAreaHeight(e.target)
     } 
 
-    function getMouseXY(e:React.MouseEvent<HTMLDivElement>):void {
-        e.preventDefault()
-        const divRect = e.currentTarget.getBoundingClientRect()
-
-        const xy = {
-            x:divRect.left,
-            y:divRect.top,
-            idx,
-            height:divRect.height
-        }
-        dispatch(getXY(xy))
+    function onclick_handler_option_text(e:React.MouseEvent<HTMLDivElement>){
+        const modalInfo = computeModalInfo(e,idx,"text_modal")
+        dispatch(getModalInfo(modalInfo))
+        setModalOpen(true)
     }
 
-    const [,img_drop_toText] = useDrop({
-        accept:[NativeTypes.FILE],
-        drop(item:onlineImgType, monitor) {
-            console.log(item.dataTransfer)
-            alert(item)
-        },
-    })
+    // const [,img_drop_toText] = useDrop({
+    //     accept:[NativeTypes.FILE],
+    //     drop(item:onlineImgType, monitor) {
+    //         console.log(item.dataTransfer)
+    //         alert(item)
+    //     },
+    // })
     //#endregion
 
 
@@ -257,9 +266,6 @@ function Memo({
 
     //#endregion
     
-
-
-
     const onFocusHandler = (e:React.FocusEvent<HTMLTextAreaElement>) => {
         e.preventDefault()
         update_URL_false()
@@ -280,13 +286,22 @@ function Memo({
             e,
             url:urlText,
             idx:idx,
-            NewPushImgs
+            NewPushImgs,
+            update_URL_false
         })
     }
+    function onclick_handler_option_img(e:React.MouseEvent<HTMLDivElement>,index:number){
+        const modalInfo = computeModalInfo(e,index,"img_modal")
+        dispatch(getModalInfo(modalInfo))
+        setModalOpen(true)
+    }
+
+
+    useEffect(()=>{console.log(imgs)},[imgs])
 
     return (
-        <>
-            <div className="memo" ref={img_drop_toText} key={idx}>
+        <div>
+            <div className="memo" key={idx}>
                 <div/>
                 <textarea 
                     className="edit-text"
@@ -306,7 +321,7 @@ function Memo({
                             e,
                         })
                     }} 
-                    onChange={memoHandler} 
+                    onChange={e=>memoHandler(e)} 
                     ref={el=>textsRef.current[idx] = el}
                     value={text[idx]}
                 />
@@ -314,8 +329,7 @@ function Memo({
                     className="option-button" 
                     onClick={e=>{
                         e.preventDefault()
-                        getMouseXY(e)
-                        setModalOpen(true)
+                        onclick_handler_option_text(e)
                     }}>
                     <span className="material-symbols-outlined">
                         more_vert
@@ -326,7 +340,7 @@ function Memo({
                 <input 
                     spellCheck="false"
                     type="text" 
-                    placeholder="구글에서 사진URL을 복사하세요"
+                    placeholder="구글에서 이미지 주소 복사 뒤 엔터를 누르세요."
                     className="insert-url-input"
                     value={urlText}
                     onChange={onChangeHandler_URL}
@@ -335,59 +349,35 @@ function Memo({
             </div>
 
             {imgs.map((item,index)=>
-                index === idx ? (
-                    <>
-                        <img src={item.url} key={index}/>
-                        <div>{index}</div>
-                    </>
+                item.idx === idx ? (
+                    <div className="edit-img">
+                        <div className="edit-img-frame"
+                            style={{justifyContent:item.sort}}>
+                            <img 
+                                src={item.url} 
+                                key={index}
+                                style={{
+                                    width:typeof item.rate === "number" ?
+                                    `${item.rate}%`:
+                                    `auto`
+                                }}
+                            />
+                        </div>
+                        <div className="edit-img-frame" onClick={e=>{onclick_handler_option_img(e,index)}}>
+                            <div className="option-button">
+                                <span className="material-symbols-outlined">
+                                    more_vert
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 ):null
             )}
-        </>
+        </div>
     )
 }
 
 type MemoImgType = {
     url:string
     imgshooks: imgsReturnType
-}
-
-function MemoImg({url,imgshooks}:MemoImgType){
-
-    const combinedRef = useRef(null)
-
-    // const [{ isDragging }, drag] = useDrag(() => ({
-    //     type: 'image', // 드래그 가능한 항목의 타입을 'image'로 지정
-    //     item: { type: 'image', url }, // 드래그하는 항목에는 이미지 URL이 포함됩니다.
-    //     collect: (monitor) => ({
-    //       isDragging: !!monitor.isDragging(),
-    //     }),
-    //   }));
-    
-    //   const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    //     accept: 'image',
-    //     drop: (item, monitor) => {
-    //       console.log('Image dropped:', item);''
-    //       alert('Image dropped!');
-    //     }, 
-    //     collect: (monitor) => ({
-    //       isOver: !!monitor.isOver(),
-    //       canDrop: !!monitor.canDrop(),
-    //     }),
-    //   }));
-
-    //   const [,urlDrop] = useDrop({
-    //     accept:[NativeTypes.FILE],
-    //     drop(file:{files:FileList}){
-    //         console.log(file)
-    //     }
-            
-    //     })
-
-    //   drag(drop(urlDrop(combinedRef)))
-
-
-
-    return (
-        <img src={url} ref={combinedRef}/>
-    )
 }
