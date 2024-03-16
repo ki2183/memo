@@ -18,12 +18,6 @@ export default WritePage
 
 function WritePageContainer(){
 
-    const [text,setText] = useState<string>("")
-
-    useEffect(()=>{
-        console.log(text)
-    },[text])
-
     return(
         <div className="container-write">
             <div className="background-write">

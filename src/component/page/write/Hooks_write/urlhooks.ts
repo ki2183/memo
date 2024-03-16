@@ -3,7 +3,7 @@ export type urlHooksType = {
     url:string,
     idx:number,
     NewPushImgs:(idx:number,url:string)=> void,
-    update_URL_false: () => void
+    img_URL_close: () => void
 }
 
 function urlHooks({
@@ -11,18 +11,13 @@ function urlHooks({
     url,
     idx,
     NewPushImgs,
-    update_URL_false
+    img_URL_close
 }:urlHooksType){
 
     if(e.key === "Enter"){
-        console.log(idx)
         NewPushImgs(idx,url)
-        update_URL_false()
+        img_URL_close() // closeURL
     }
-
-}
-
-export type urlHooksReturnType = {
 
 }
 

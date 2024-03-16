@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import "./editModal.css"
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { delText } from "../../store/slices/text";
-import { changeRateImg, changeSortImg, delImg } from "../../store/slices/imgs";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { delText } from "../../../../store/slices/text";
+import { changeRateImg, changeSortImg, delImg } from "../../../../store/slices/imgs";
 
 export const customModalStyles: ReactModal.Styles = {
     overlay: {
@@ -34,11 +34,11 @@ export const customModalStyles: ReactModal.Styles = {
   
   type OptionModalType = {
     modalOpen:boolean
-    update_URL_true?: (idx: number) => void
-    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+    modal_close:()=> void
+    img_URL_open?: (idx: number) => void
   }
 
-  function OptionModal({modalOpen,setModalOpen,update_URL_true}:OptionModalType) {
+  function OptionModal({modalOpen,img_URL_open,modal_close}:OptionModalType) {
   
     const addModalStyle_invisible = {
       display : "none",
@@ -67,18 +67,18 @@ export const customModalStyles: ReactModal.Styles = {
     const delEvent_text = (e:React.MouseEvent<HTMLLIElement>) => {
       if(idx !== 0)
         dispatch(delText({idx}))
-      setModalOpen(false)  
+      modal_close() 
     }
     const imgEvent = (e:React.MouseEvent<HTMLLIElement>) => {
-      if(update_URL_true){
-        update_URL_true(idx)
+      if(img_URL_open){
+        img_URL_open(idx)
       }
-      setModalOpen(false) 
+      modal_close()
     }
 
     const delEvent_img = (e:React.MouseEvent<HTMLLIElement>) => {
       dispatch(delImg(idx))
-      setModalOpen(false)  
+      modal_close() 
     }
 
     const openSort = (e:React.MouseEvent<HTMLLIElement>) => {
@@ -119,7 +119,7 @@ export const customModalStyles: ReactModal.Styles = {
     return (
        <Modal
             isOpen={modalOpen}
-            onRequestClose={() => setModalOpen(false)}
+            onRequestClose={() => modal_close()}
             style={customModalStyles}
             ariaHideApp={false}
             shouldCloseOnOverlayClick={false}
@@ -127,7 +127,7 @@ export const customModalStyles: ReactModal.Styles = {
           <div 
             onClick={e=>{
               e.preventDefault()
-              setModalOpen(false)
+              modal_close()
             }}
             className="container-option-modal"
           >
