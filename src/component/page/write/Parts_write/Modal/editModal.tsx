@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import "./editModal.css"
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { delText } from "../../../../store/slices/text";
-import { changeRateImg, changeSortImg, delImg } from "../../../../store/slices/imgs";
+import { addText_between, delText } from "../../../../store/slices/text";
+import { add_text_moveMent, changeRateImg, changeSortImg, delImg, del_text_movement, moveImg } from "../../../../store/slices/imgs";
 
 export const customModalStyles: ReactModal.Styles = {
     overlay: {
@@ -35,40 +35,74 @@ export const customModalStyles: ReactModal.Styles = {
   type OptionModalType = {
     modalOpen:boolean
     modal_close:()=> void
-    img_URL_open?: (idx: number) => void
+    img_URL_open?: (idx: number) => void,
+    new_textArea_focusing: () => void
+    textsRef:React.MutableRefObject<(HTMLTextAreaElement | null)[]>
   }
 
-  function OptionModal({modalOpen,img_URL_open,modal_close}:OptionModalType) {
-  
+  function OptionModal({modalOpen,textsRef,img_URL_open,modal_close,new_textArea_focusing}:OptionModalType) {
+    
+    const modalInfo = useAppSelector((state)=>state.modalInfo)
+    const text = useAppSelector(state => state.text)
+
+    const dispatch = useAppDispatch()
     const addModalStyle_invisible = {
       display : "none",
     }
-    const modalInfo = useAppSelector((state)=>state.modalInfo)
-    const imgs = useAppSelector((state)=>state.imgs)
+
     const [addModalStyle,setAddModalStyle] = useState(addModalStyle_invisible)
     const [addModal_type,setAddModal_type] = useState<"sort"|"size">("sort")
     const modalBackGround = useAppSelector((state)=>state.theme.modalBackground)
     const {idx,x,y,modal_type} = modalInfo
-    const dispatch = useAppDispatch()
-    useEffect(()=>{console.log(imgs)},[imgs])
+    
+
     const modelstyle = {
       top:`${y + 30}px`,
       left:`${x}px`,
       background:modalBackGround
     }
-    
-    useEffect(()=>{
+
+    /** useEffect **/
+    //#region
+
+    useEffect(()=>{ //sec_modal off
       setAddModalStyle(addModalStyle_invisible)
-    },[])
-    useEffect(()=>{ //모달이 꺼지든 실행되든 안보임
+    },[]) 
+
+    useEffect(()=>{ //sec_modal off
       setAddModalStyle(addModalStyle_invisible)
     },[modalOpen])
 
+    //#endregion
+
+    /** event **/
+    //#region
     const delEvent_text = (e:React.MouseEvent<HTMLLIElement>) => {
-      if(idx !== 0)
+      if(idx !== 0){
         dispatch(delText({idx}))
+        dispatch(del_text_movement(idx))
+        idx !== text.length-1 ?
+        textsRef.current[idx-1]?.focus() :
+        new_textArea_focusing()
+      }
+        
       modal_close() 
     }
+
+    const delEvent_img = (e:React.MouseEvent<HTMLLIElement>) => {
+      dispatch(delImg(idx))
+
+      modal_close() 
+    }
+
+    const addEvent_text = (e:React.MouseEvent<HTMLLIElement>)=>{
+      dispatch(addText_between(idx))
+      dispatch(add_text_moveMent(idx))
+      
+      textsRef.current[idx+1]?.focus()
+      modal_close() 
+    }
+
     const imgEvent = (e:React.MouseEvent<HTMLLIElement>) => {
       if(img_URL_open){
         img_URL_open(idx)
@@ -76,10 +110,10 @@ export const customModalStyles: ReactModal.Styles = {
       modal_close()
     }
 
-    const delEvent_img = (e:React.MouseEvent<HTMLLIElement>) => {
-      dispatch(delImg(idx))
-      modal_close() 
-    }
+    //#endregion
+
+    /* style */
+    //#region
 
     const openSort = (e:React.MouseEvent<HTMLLIElement>) => {
       setAddModal_type("sort")
@@ -105,10 +139,13 @@ export const customModalStyles: ReactModal.Styles = {
       setAddModalStyle(addModalStyle_visible)
     }
 
+    //#endregion
+
     const modal_list = modal_type === 'text_modal' 
     ? [
       {idx,title:"삭제",spanName:"delete",func:delEvent_text},
-      {idx,title:"사진",spanName:"image",func:imgEvent}
+      {idx,title:"사진",spanName:"image",func:imgEvent},
+      {idx,title:"추가",spanName:"add",func:addEvent_text}
     ]  //text-modal-list
     : [
       {idx,title:"삭제",spanName:"delete",func:delEvent_img},
@@ -137,7 +174,7 @@ export const customModalStyles: ReactModal.Styles = {
             >
               {
                 modal_list.map((item,index)=>(
-                  <ModalList idx={idx} title={item.title} spanName={item.spanName} func={item.func}/>
+                  <ModalList key={index} idx={idx} title={item.title} spanName={item.spanName} func={item.func}/>
                 ))
               }
             </ul>

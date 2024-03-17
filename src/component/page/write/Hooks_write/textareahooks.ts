@@ -4,6 +4,9 @@ interface key_handler_hooks_interface extends EditorField_type {
     text:string[],
     addText: ()=>void,
     delText: (idx_: number) => void,
+    addText_Between: ()=> void,
+    del_text_Movement: ()=> void,
+    add_text_Movement: ()=> void,
     e:React.KeyboardEvent<HTMLTextAreaElement>
 }
 
@@ -14,6 +17,9 @@ function KeyboardHandlerHooks({
     textsRef,
     delText,
     addText,
+    addText_Between,
+    del_text_Movement,
+    add_text_Movement,
     new_textArea_focusing,
     e,  
 }:key_handler_hooks_interface){ 
@@ -22,7 +28,12 @@ function KeyboardHandlerHooks({
     const paragraphMax = textAreaManagement.checkParagraphMax()
 
     if (e.shiftKey && e.key === "Enter") return;
-
+    else if(e.ctrlKey && e.key === "Enter"){ // ctrl+enter + add = textarea
+        e.preventDefault()
+        addText_Between()
+        add_text_Movement()
+        textsRef.current[idx+1]?.focus()
+    }
     else if(e.key === "Enter"){ //add -> focusFunc
         e.preventDefault()
         if(idx === max){
@@ -52,6 +63,7 @@ function KeyboardHandlerHooks({
         if(idx !== 0 && text[idx] === ""){ //del -> focus
             e.preventDefault()
             textsRef.current[idx-1]?.focus()
+            del_text_Movement()
             delText(idx)
         }
     }

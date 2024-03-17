@@ -6,19 +6,13 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import OptionModal from "./Parts_write/Modal/editModal";
 import { useAppSelector } from "../../store/hooks";
 import { useDispatch } from "react-redux";
-import { addText, delText, writeText } from "../../store/slices/text";
+import { addText, addText_between, delText, writeText } from "../../store/slices/text";
 import gsap from "gsap";
 import { EditNavTop } from "../../components/editerNav";
-import { imgRate, imgSort, pushNewImg } from "../../store/slices/imgs";
+import { add_text_moveMent, del_text_movement, dndImg_to_text_type, dnd_img_to_img, dnd_img_to_text, imgRate, imgSort, imgstype, pushNewImg } from "../../store/slices/imgs";
 import urlHooks from "./Hooks_write/urlhooks";
-import imgHooks, {imgsReturnType} from "./Hooks_write/imgshooks"; 
 import KeyboardHandlerHooks from "./Hooks_write/textareahooks"
 import { ModalInfoType, getModalInfo, modal_type } from "../../store/slices/modalInfo";
-
-export type imgsType = {
-    url:string,
-    idx:number
-}
 
 export const adjustTextAreaHeight = (element:HTMLTextAreaElement) => {
     element.style.height = '0px'
@@ -49,12 +43,12 @@ function Edit(){
 
     const [title, setTitle] = useState<string>("") //제목
     const titleRef = useRef<HTMLTextAreaElement>(null)
-    const [imgs,setImgs] = useState<imgsType[]>([])
     const textsRef = useRef<Array<HTMLTextAreaElement|null>>([]) //for animation
     const [forNewTextFocusing,setForNewTextFocusing] = useState<boolean>(false)
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [openURL,setOpenURL] = useState<img_url_tf_type>({tf:false,idx:0})
     const text = useAppSelector(state => state.text)
+    const imgs = useAppSelector(state => state.imgs)
 
 
      /* OpenClose FCN */
@@ -97,9 +91,11 @@ function Edit(){
                 <EditNavTop/>
                 <div className="frame-edit">
                     <OptionModal 
+                        textsRef={textsRef}
                         modalOpen={modalOpen} 
                         img_URL_open={img_URL_open}
                         modal_close={modal_close}
+                        new_textArea_focusing={new_textArea_focusing}
                     />
 
                     <div/>
@@ -122,6 +118,7 @@ function Edit(){
                                             key={idx}
                                             idx={idx}
                                             max={max}
+                                            imgs={imgs}
                                             textsRef={textsRef}                                            
                                             modal_open={modal_open}
                                             modal_close={modal_close}
@@ -154,6 +151,7 @@ export type EditorField_type = {
 
 interface memoInterface extends EditorField_type {
     openURL:img_url_tf_type
+    imgs:imgstype[]
     modal_open: ()=> void
     modal_close: ()=> void
     img_URL_close:()=>void
@@ -184,6 +182,18 @@ function EditorField({
     const imgs = useAppSelector(state => state.imgs)
     const urlInputCheck = useAppSelector(state => state.urlInputCheck)
 
+    const [,drop] = useDrop({
+        accept:"img",
+        drop(item, monitor) {
+            const arrIdx = item as img_drag_type
+            const dndDto = {
+                arrIdx:arrIdx.img_index,
+                willchangeIdx:idx      
+            } as dndImg_to_text_type
+            dispatch(dnd_img_to_text(dndDto))
+        },
+    })
+
     //#endregion
 
     /** useEffect **/
@@ -191,9 +201,9 @@ function EditorField({
     useLayoutEffect(()=>{
         if(textsRef.current && textsRef.current[idx] !== null)
             adjustTextAreaHeight(textsRef.current[idx]!)
-    },[])
+    },[]) //초기 textarea 높이 설정
 
-    useEffect(()=>{
+    useEffect(()=>{ 
         if(openURL.tf && idx === openURL.idx){
             gsap.to(ref.current,{
                 display:"block",
@@ -215,7 +225,7 @@ function EditorField({
             })
         }
         setURLText("") //닫히거나 열리면 url정보 삭제
-    },[openURL])   
+    },[openURL])   //url 애니메이션
     //#endregion
 
     /** handler **/
@@ -250,7 +260,11 @@ function EditorField({
             textsRef, 
             delText:del_text,
             addText:add_text, 
+            addText_Between,
+            del_text_Movement,
+            add_text_Movement,
             new_textArea_focusing,
+            
         })
     }
 
@@ -299,18 +313,32 @@ function EditorField({
         dispatch(pushNewImg({idx,url}))
     }
 
+    const del_text_Movement = () =>{
+        dispatch(del_text_movement(idx))
+    }
+    const add_text_Movement = () =>{
+        dispatch(add_text_moveMent(idx))
+    }
+    const addText_Between = ()=>{
+        dispatch(addText_between(idx))
+    }
+
     //#endregion
 
     return (
-        <div>
+        <div ref={drop}>
             <div className="memo" key={idx}>
                 <div/>
+    
                 <textarea 
                     value={text[idx]}
                     spellCheck="false"
                     className="edit-text"
                     placeholder={placeholder}
-                    ref={el=>textsRef.current[idx] = el}
+                    ref={el => {
+                        textsRef.current[idx] = el; // 드롭 대상 요소의 ref를 설정합니다.
+                        drop(el); // useDrop 후크로 만든 drop 핸들러에 ref를 전달하여 요소를 조작합니다.
+                    }}
                     onBlur={onBlurHandler_textArea}
                     onFocus={onFocusHandler_textArea}
                     onKeyDown={keyDownHandler_textArea} 
@@ -338,32 +366,6 @@ function EditorField({
                     onKeyDown={keyDownHandler_URL}
                 />
             </div>
-
-            {/* {imgs.map((item,index)=>
-                item.idx === idx ? (
-                    <div className="edit-img">
-                        <div className="edit-img-frame"
-                            style={{justifyContent:item.sort}}>
-                            <img 
-                                src={item.url} 
-                                key={index}
-                                style={{
-                                    width:typeof item.rate === "number" ?
-                                    `${item.rate}%`:
-                                    `auto`
-                                }}
-                            />
-                        </div>
-                        <div className="edit-img-frame" onClick={e=>{onclick_handler_option_img(e,index)}}>
-                            <div className="option-button">
-                                <span className="material-symbols-outlined">
-                                    more_vert
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                ):null
-            )} */}
             <ImgMolecules
                 EditorField_idx={idx}
                 modal_open={modal_open}
@@ -374,7 +376,7 @@ function EditorField({
 
 type ImgMolecules_type = {
     EditorField_idx:number,
-    modal_open:()=>void
+    modal_open:()=>void,
 }
 
 function ImgMolecules({EditorField_idx,modal_open}:ImgMolecules_type){
@@ -393,6 +395,7 @@ function ImgMolecules({EditorField_idx,modal_open}:ImgMolecules_type){
         {imgs.map((item,img_index)=>
             item.idx === EditorField_idx ? (
                 <ImgAtoms
+                    key={img_index}
                     url={item.url}
                     rate={item.rate}
                     sort={item.sort}
@@ -413,15 +416,33 @@ type ImgAtoms_type = {
     onclick_handler_option_img:(e: React.MouseEvent<HTMLDivElement>, index: number) => void
 }
 
+type img_drag_type = {
+    img_index:number
+}
+
 function ImgAtoms({url,rate,sort,img_index,onclick_handler_option_img}:ImgAtoms_type){
 
-    
+    const dispatch = useDispatch()
+
+    const [,drag] = useDrag({
+        type:"img",
+        item:{img_index}
+    })
+
+    const [,drop] = useDrop({
+        accept:"img",
+        drop(item:{img_index:number}, monitor) {
+            dispatch(dnd_img_to_img({arrIdx:img_index,willchangeIdx:item.img_index}))
+
+        },
+    })
 
     return(
         <div className="edit-img">
                     <div className="edit-img-frame"
                         style={{justifyContent:sort}}>
                         <img 
+                            ref={el => drag(drop(el))}
                             src={url} 
                             style={{
                                 width:typeof rate === "number" ?
