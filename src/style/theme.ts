@@ -3,7 +3,7 @@ export const lightTheme = {
     textColor: "#333333",
     borderColor: "#ede7f7",
     toggleColor: "#cbb5dc",
-    navColor:"#00000004",
+    navColor:"#0000000f",
     navBorder:"#0000001a",
     theme:"light",
     modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))"

@@ -2,16 +2,31 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import MainPage from './component/page/main/mainPage';
 import { GlobalStyle } from './style/GlobalStyle';
-import { useAppSelector } from './component/store/hooks';
+import { useAppDispatch, useAppSelector } from './component/store/hooks';
 import WritePage from './component/page/write/writePage';
+import { useEffect } from 'react';
+import { themeType } from './style/theme';
+import { changeTheme } from './component/store/slices/theme';
 
 
 
 function App(){
 
   const theme = useAppSelector(state => state.theme)
+  const dispatch = useAppDispatch()
 
-  
+  useEffect(()=>{
+    const theme_local = localStorage.getItem('theme')
+    const theme_ = theme_local ? JSON.parse(theme_local) as themeType : null 
+    
+    if((theme_ !== null && theme_.theme) && theme_.theme === "dark"){
+      dispatch(changeTheme())  
+    }
+  },[])
+
+  useEffect(()=>{
+    console.log(theme.theme)
+  },[theme])
 
   return (
     <>

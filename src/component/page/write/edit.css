@@ -95,7 +95,7 @@
     max-width: 690px;
     height: 100%;
     display: grid;
-    grid-template-columns: auto 30px;
+    grid-template-columns:30px auto 30px;
 }.edit-img-frame:nth-child(1){
     display: flex;
     align-items: center;

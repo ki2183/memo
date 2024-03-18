@@ -23,7 +23,7 @@ export const textSlice = createSlice({
         },
         addText_between:(state, action:PayloadAction<number>)=>{
             const idx = action.payload
-            state.splice(idx,0,"")
+            state.splice(idx+1,0,"")
         },
         writeText:(state,action:PayloadAction<writeTextType>)=>{
             const {idx,newText} = action.payload
@@ -33,9 +33,12 @@ export const textSlice = createSlice({
             const {idx} = action.payload
             state.splice(idx,1)
         },
+        changeText_arr:(state,action:PayloadAction<string[]>)=>{
+            return action.payload
+        }
     }
 })
 
-export const { addText,writeText,delText,addText_between } = textSlice.actions
+export const { addText,writeText,delText,addText_between,changeText_arr} = textSlice.actions
 export const selectTheme = (state: RootState) => state.text
 export default textSlice.reducer

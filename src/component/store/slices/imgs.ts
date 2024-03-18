@@ -60,7 +60,6 @@ export const imgsSlice = createSlice({
             const {arrIdx,willchangeIdx} = action.payload
 
             if(state.length > 0){
-
                 const state_mirror = [...state];
                 state[arrIdx] = { ...state[willchangeIdx] };
                 state[willchangeIdx] = { ...state_mirror[arrIdx] };
@@ -90,12 +89,15 @@ export const imgsSlice = createSlice({
                     item.idx = item.idx + 1 
                 }
             })
+        },change_imgs:(state,action:PayloadAction<imgstype[]>)=>{
+            return action.payload
         }
     }
 })
 
 export const { 
         pushNewImg,
+        change_imgs,
         delImg, 
         moveImg, 
         changeRateImg, 

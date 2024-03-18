@@ -10,27 +10,15 @@ export const themeSlice = createSlice({
   initialState,
   reducers: {
     changeTheme: (state) =>{
+      console.log('바뀜')
         if(state.theme === 'light'){
-            const {bgColor,borderColor,modalBackground,navBorder,navColor,textColor,theme,toggleColor} = darkTheme
-            state.bgColor = bgColor
-            state.borderColor = borderColor
-            state.textColor = textColor
-            state.toggleColor = toggleColor
-            state.navColor = navColor
-            state.navBorder = navBorder
-            state.theme = theme
-            state.modalBackground = modalBackground
+          localStorage.setItem('theme', JSON.stringify(darkTheme))
+          return { ...state, ...darkTheme };
 
         }else{
-          const {bgColor,borderColor,modalBackground,navBorder,navColor,textColor,theme,toggleColor} = lightTheme
-          state.bgColor = bgColor
-          state.borderColor = borderColor
-          state.textColor = textColor
-          state.toggleColor = toggleColor
-          state.navColor = navColor
-          state.navBorder = navBorder
-          state.theme = theme
-          state.modalBackground = modalBackground
+          localStorage.setItem('theme', JSON.stringify(lightTheme))
+          return { ...state, ...lightTheme };
+          
         }
     }
   },

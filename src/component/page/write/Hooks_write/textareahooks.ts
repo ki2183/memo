@@ -1,4 +1,4 @@
-import { EditorField_type } from './../edit';
+import { EditorField_type } from "../Parts_write/Editor_field/EditorField";
 
 interface key_handler_hooks_interface extends EditorField_type {
     text:string[],
@@ -24,15 +24,23 @@ function KeyboardHandlerHooks({
     e,  
 }:key_handler_hooks_interface){ 
 
-    const textAreaManagement = TextAreaManagement(textsRef.current[idx])
-    const paragraphMax = textAreaManagement.checkParagraphMax()
+    const textArea_management = TextAreaManagement(textsRef.current[idx])
+    const paragraphMax = textArea_management.checkParagraphMax()
 
     if (e.shiftKey && e.key === "Enter") return;
     else if(e.ctrlKey && e.key === "Enter"){ // ctrl+enter + add = textarea
         e.preventDefault()
+        if(max === idx){
+            addText()
+            new_textArea_focusing()
+            return
+        }
         addText_Between()
         add_text_Movement()
         textsRef.current[idx+1]?.focus()
+        
+        
+        
     }
     else if(e.key === "Enter"){ //add -> focusFunc
         e.preventDefault()
@@ -44,15 +52,14 @@ function KeyboardHandlerHooks({
         textsRef.current[idx+1]?.focus()
     }else if(e.key === "ArrowUp"){
         if(0 < idx){ //단락이 없거나 단락 번호가 0이면 이전 text 포커싱
-            if(paragraphMax === 0 || textAreaManagement.checkParagraphNum() === 0){
+            if(paragraphMax === 0 || textArea_management.checkParagraphNum() === 0){
                 e.preventDefault()
                 textsRef.current[idx-1]?.focus()
-                return
             } 
         }
     }else if(e.key === "ArrowDown"){
         if(idx < max){
-            if(paragraphMax === 0 || textAreaManagement.checkParagraphNum() === paragraphMax){
+            if(paragraphMax === 0 || textArea_management.checkParagraphNum() === paragraphMax){
                 e.preventDefault()
                 textsRef.current[idx+1]?.focus()
             }
