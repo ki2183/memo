@@ -44,12 +44,34 @@ function KeyboardHandlerHooks({
     }
     else if(e.key === "Enter"){ //add -> focusFunc
         e.preventDefault()
-        if(idx === max){
-            addText()
-            new_textArea_focusing() //focusSign
-            return
+        const get_location = textArea_management.checkParagraph_location() 
+        if(get_location !== null){
+            const {cursor_last_point,cursor_position,fst_parts,sec_parts} = get_location
+            console.log(cursor_last_point,cursor_position)
+            if(cursor_last_point === cursor_position){ //커서가 마지막일 때 enter event
+                
+                // if(idx !== max){
+                //     addText_Between()
+                //     textsRef.current[0]?.focus()
+                 
+                //     // textsRef.current[idx+1]?.focus()
+                // }else{
+                //     addText()
+                //     new_textArea_focusing()    
+                // }
+                // else{
+                //     textsRef.current[idx+1]?.focus()
+                // }
+                    
+                // }else{
+                //     textsRef.current[idx+1]?.focus()
+                // }
+            }else{ //커서가 마지막이 아닐떄 enter event
+
+            }
         }
-        textsRef.current[idx+1]?.focus()
+     
+        
     }else if(e.key === "ArrowUp"){
         if(0 < idx){ //단락이 없거나 단락 번호가 0이면 이전 text 포커싱
             if(paragraphMax === 0 || textArea_management.checkParagraphNum() === 0){
@@ -81,12 +103,18 @@ export default KeyboardHandlerHooks
 type TextAreaManagement = {
     checkParagraphNum: ()=> number
     checkParagraphMax: ()=> number
-}
+    checkParagraph_location:()=>{
+        cursor_position: number;
+        cursor_last_point: number;
+        fst_parts: string;
+        sec_parts: string;
+    } | null }
 
 function TextAreaManagement(textarea:HTMLTextAreaElement | null):TextAreaManagement{ // 줄바꿈(\n)이(가) 존재할때 포커싱 핸들러
 
     const text = textarea?.value
     const count = (text !== null) && (text !== undefined )? text.split('\n').length - 1 : 0
+    const text_arr = text?.split('')
 
     function checkParagraphMax(){
         return count
@@ -104,8 +132,28 @@ function TextAreaManagement(textarea:HTMLTextAreaElement | null):TextAreaManagem
         }
     }
 
+    function checkParagraph_location(){
+        if(textarea !== null){
+            const cursorPosition = textarea?.selectionStart;
+            const value = textarea?.value
+            const fstParts = value.substring(0,cursorPosition)
+            const secParts = value.substring(cursorPosition)
+            const value_len = value.length
+
+            return {
+                cursor_position:cursorPosition,
+                cursor_last_point:value_len,
+                fst_parts:fstParts,
+                sec_parts:secParts
+            }
+        }else{
+            return null
+        }
+    }
+
     return {
         checkParagraphNum,
-        checkParagraphMax
+        checkParagraphMax,
+        checkParagraph_location
     }
 }

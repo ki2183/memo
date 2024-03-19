@@ -107,4 +107,17 @@
     justify-content: center;
     align-items: center;
     margin-right: 0px;
+}.container-auto-save{
+    position: fixed;
+    width: 6rem;
+    height: 2.3rem;
+    border-radius: 8px;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left:90%;
+    top:92%;
+    transform: translate(-50%,-50%);
+    transition: all 1s;
 }

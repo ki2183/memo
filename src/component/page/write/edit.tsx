@@ -27,12 +27,35 @@ function Edit(){
     const [title, setTitle] = useState<string>("") //제목
     const titleRef = useRef<HTMLTextAreaElement>(null)
     const textsRef = useRef<Array<HTMLTextAreaElement|null>>([]) //for animation
+    const [autoSaveSwitch,setAutoSaveSwitch] = useState<boolean>(false)
     const [forNewTextFocusing,setForNewTextFocusing] = useState<boolean>(false)
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [openURL,setOpenURL] = useState<img_url_tf_type>({tf:false,idx:0})
     const text = useAppSelector(state => state.text)
     const imgs = useAppSelector(state => state.imgs)
     const dispatch = useAppDispatch()
+
+
+    const setMemoDTO = () =>{
+        const memoDTO = {
+            title:title,
+            text:text,
+            imgs:imgs
+        }
+        const memoDTO_JSON = JSON.stringify(memoDTO)
+        console.log(memoDTO_JSON)
+        localStorage.setItem("memo", memoDTO_JSON)
+    }
+
+    useEffect(()=>{
+        const timer = setTimeout(()=>{
+            setMemoDTO()
+        },5 * 60 * 1000) 
+
+        return ()=>{
+            clearTimeout(timer)
+        }
+    },[])
 
     useLayoutEffect(()=>{
         const getDto_JSON = localStorage.getItem("memo")
@@ -52,32 +75,6 @@ function Edit(){
         }
     },[])
 
-    useEffect(()=>{
-        const memoDTO = {
-            title:title,
-            text:text,
-            imgs:imgs
-        }
-        const memoDTO_JSON = JSON.stringify(memoDTO)
-        const timer = setTimeout(()=>{
-            localStorage.setItem("memo", memoDTO_JSON);
-        },5 * 60 * 1000) 
-
-        return ()=>{
-            clearTimeout(timer)
-        }
-    },[])
-
-    const test = () =>{
-        const memoDTO = {
-            title:title,
-            text:text,
-            imgs:imgs
-        }
-        const memoDTO_JSON = JSON.stringify(memoDTO)
-        console.log(memoDTO_JSON)
-        localStorage.setItem("memo", memoDTO_JSON);
-    }
 
     /* OpenClose FCN */
     //#region
@@ -109,6 +106,10 @@ function Edit(){
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="container-edit">
+                <AutoSave
+                    autoSaveSwitch={autoSaveSwitch}
+                    setAutoSaveSwitch={setAutoSaveSwitch}
+                />
                 <EditNavTop/>
                 <div className="frame-edit">
                     <OptionModal 
@@ -118,7 +119,6 @@ function Edit(){
                         modal_close={modal_close}
                         new_textArea_focusing={new_textArea_focusing}
                     />
-
                     <div/>
                     <div>
                         <textarea 
@@ -131,8 +131,7 @@ function Edit(){
                             onChange={e=>title_hooks_onChange({e,setTitle})}
                         />
                         <div className="frame-memos">
-                            <div className="fixed w-4 h-4 bg-slate-400 text-blue-50"
-                            onClick={test}>임시저장</div>
+          
                             {
                                 (text.length > 0) && text.map((item:string,idx:number)=>{
 
@@ -165,3 +164,20 @@ function Edit(){
 
 export default Edit
 
+// autoSaveSwitch,setAutoSaveSwitch
+
+export type AutoSave_type ={
+    autoSaveSwitch:boolean
+    setAutoSaveSwitch:React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function AutoSave({
+    autoSaveSwitch,
+    setAutoSaveSwitch
+}:AutoSave_type){
+    return (
+        <div className="container-auto-save">
+            임시저장
+        </div>
+    )
+}
