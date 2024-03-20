@@ -1,19 +1,21 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import { add_text_moveMent, del_text_movement, dndImg_to_text_type, dnd_img_to_text, imgstype, pushNewImg } from "../../../../store/slices/imgs"
-import { addText, addText_between, delText, writeText } from "../../../../store/slices/text"
+import { addText, addText_between, delText, lineBreakText, writeText } from "../../../../store/slices/text"
 import { adjustTextAreaHeight, computeModalInfo } from "../../Hooks_write/etcFCN"
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks"
 import KeyboardHandlerHooks from "../../Hooks_write/textareahooks"
 import { getModalInfo } from "../../../../store/slices/modalInfo"
 import urlHooks from "../../Hooks_write/urlhooks"
-import ImgMolecules from "../img_field/ImgFiled"
-import URLfield from "../url_field/urlField"
+import ImgMolecules from "../img_field/img_field"
+import URLfield from "../url_field/url_field"
 import { img_url_tf_type } from "../../edit"
 import { useDrop } from "react-dnd"
+import "./editor_field.css"
 
 export type EditorField_type = {
     idx:number
     max:number
+    ctrl_z_handler: () => void
     new_textArea_focusing:()=> void
     textsRef:React.MutableRefObject<(HTMLTextAreaElement | null)[]>
 }
@@ -24,6 +26,7 @@ interface memoInterface extends EditorField_type {
     modal_open: ()=> void
     modal_close: ()=> void
     img_URL_close:()=>void
+    setFocusCur:React.Dispatch<React.SetStateAction<number>>
 }
 
 type img_drag_type = {
@@ -33,10 +36,12 @@ type img_drag_type = {
 function EditorField({  
     idx,
     max,
-    textsRef,
     openURL,
-    img_URL_close,
+    textsRef,
     modal_open,
+    setFocusCur,
+    img_URL_close,
+    ctrl_z_handler,
     new_textArea_focusing,
 }:memoInterface){
 
@@ -74,8 +79,6 @@ function EditorField({
     },[]) //초기 textarea 높이 설정
      //#endregion
 
-
-
     /** handler **/
     //#region
 
@@ -105,6 +108,8 @@ function EditorField({
             max, 
             text, 
             textsRef, 
+            ctrl_z_handler,
+            lineBreak_text,
             addText_Between,
             addText:add_text, 
             delText:del_text,
@@ -145,7 +150,6 @@ function EditorField({
     /** dispatch => function **/
     //#region
 
-
     const NewPushImgs = (idx:number,url:string) => {
         dispatch(pushNewImg({idx,url}))
     }
@@ -165,6 +169,13 @@ function EditorField({
     const addText_Between = ()=>{
         dispatch(addText_between(idx))
     }
+    const lineBreak_text = (curText:string,nextText:string) => {
+       dispatch(lineBreakText({
+        curIdx:idx,
+        curText,
+        nextText
+       }))
+    }
 
     //#endregion
 
@@ -180,6 +191,9 @@ function EditorField({
                     ref={el => {
                         textsRef.current[idx] = el
                         drop(el)
+                        if(el){
+                            el.addEventListener('focus',()=>setFocusCur(idx))
+                        }
                     }}
                     onBlur={onBlurHandler_textArea}
                     onFocus={onFocusHandler_textArea}

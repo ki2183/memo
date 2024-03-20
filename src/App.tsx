@@ -24,10 +24,6 @@ function App(){
     }
   },[])
 
-  useEffect(()=>{
-    console.log(theme.theme)
-  },[theme])
-
   return (
     <>
       <GlobalStyle theme={theme}/>

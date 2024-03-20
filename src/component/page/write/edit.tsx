@@ -2,14 +2,15 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react"
 import "./edit.css"
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from "react-dnd-html5-backend";
-import OptionModal from "./Parts_write/Modal/editModal";
+import OptionModal from "./Parts_write/modal/editModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { EditNavTop } from "../../components/editerNav";
 import { title_hooks_keyDown, title_hooks_onChange } from "./Hooks_write/titlehooks";
-import EditorField from "./Parts_write/Editor_field/EditorField";
+import EditorField from "./Parts_write/editor_field/editor_field";
 import { adjustTextAreaHeight } from "./Hooks_write/etcFCN";
 import { change_imgs, imgstype } from "../../store/slices/imgs";
 import { changeText_arr } from "../../store/slices/text";
+import gsap from "gsap";
 
 export type img_url_tf_type = {
     tf:boolean,
@@ -22,19 +23,28 @@ type memoDTO_type = {
     imgs:imgstype[]
 }
 
+type prevStack_type = {
+    texts:string[]
+    imgs:imgstype[]
+    focusIdx:number
+}
+
 function Edit(){
 
     const [title, setTitle] = useState<string>("") //제목
     const titleRef = useRef<HTMLTextAreaElement>(null)
     const textsRef = useRef<Array<HTMLTextAreaElement|null>>([]) //for animation
-    const [autoSaveSwitch,setAutoSaveSwitch] = useState<boolean>(false)
     const [forNewTextFocusing,setForNewTextFocusing] = useState<boolean>(false)
+    const [autoSaveAni,setAutoSaveAni] = useState<boolean>(false)
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [openURL,setOpenURL] = useState<img_url_tf_type>({tf:false,idx:0})
     const text = useAppSelector(state => state.text)
     const imgs = useAppSelector(state => state.imgs)
+    const [prevStack,setPrevStack] = useState<prevStack_type[]>([])
+    const prevStackLimitRef = useRef<boolean>(false)
+    const ctrl_z_LimitRef = useRef<boolean>(false)
+    const [focusCur,setFocusCur] = useState<number>(0)
     const dispatch = useAppDispatch()
-
 
     const setMemoDTO = () =>{
         const memoDTO = {
@@ -43,19 +53,48 @@ function Edit(){
             imgs:imgs
         }
         const memoDTO_JSON = JSON.stringify(memoDTO)
-        console.log(memoDTO_JSON)
         localStorage.setItem("memo", memoDTO_JSON)
+        setAutoSaveAni(!autoSaveAni)
     }
 
     useEffect(()=>{
         const timer = setTimeout(()=>{
             setMemoDTO()
-        },5 * 60 * 1000) 
-
+        },2 * 60 * 1000) 
         return ()=>{
             clearTimeout(timer)
         }
-    },[])
+    },[setMemoDTO])
+
+    useEffect(()=>{
+        const dto = {   
+            texts:text,
+            imgs:imgs,
+            focusIdx:focusCur
+        } as prevStack_type
+        const push_stack = () => {
+            setPrevStack(prev=>[...prev,dto])
+        }
+        const push_full_stack = () =>{
+            const prev = [...prevStack]
+            prev.splice(0,1)
+            prev.push(dto)
+            setPrevStack(prev)
+        }
+        if(prevStackLimitRef.current === false && ctrl_z_LimitRef.current === false){
+            prevStackLimitRef.current = true
+            prevStack.length < 100 ? push_stack() : push_full_stack()
+            setTimeout(()=>{
+                prevStackLimitRef.current = false
+            },1 * 1000) 
+        }else if(ctrl_z_LimitRef.current === true){
+            ctrl_z_LimitRef.current = false
+        }
+    },[text,imgs]) //ctrl + z 할 스택들
+
+    useEffect(()=>{
+        // console.log(prevStack)
+    },[prevStack])
 
     useLayoutEffect(()=>{
         const getDto_JSON = localStorage.getItem("memo")
@@ -75,7 +114,6 @@ function Edit(){
         }
     },[])
 
-
     /* OpenClose FCN */
     //#region
 
@@ -86,7 +124,7 @@ function Edit(){
 
     //#endregion
 
-      const new_textArea_focusing = () =>{ //의존성 tf의미 없음
+    const new_textArea_focusing = () =>{ //의존성 tf의미 없음
         setForNewTextFocusing(!forNewTextFocusing)
     }
 
@@ -101,15 +139,26 @@ function Edit(){
     
     useEffect(()=>{ 
         textsRef.current[text.length-1]?.focus()
-    },[forNewTextFocusing,text.length]) //마지막 인덱스 포커싱
+    },[forNewTextFocusing]) //마지막 인덱스 포커싱
+
+    const ctrl_z_handler = () =>{
+        if(prevStack.length > 0){
+            const prevDto = prevStack.pop()
+            if(prevDto?.texts !== undefined){
+                const text = prevDto.texts
+                const idx = prevDto.focusIdx
+                ctrl_z_LimitRef.current = true
+                dispatch(changeText_arr(text))
+                textsRef.current[idx]?.focus()
+            }
+            setPrevStack(prevStack)
+        }
+    }
 
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="container-edit">
-                <AutoSave
-                    autoSaveSwitch={autoSaveSwitch}
-                    setAutoSaveSwitch={setAutoSaveSwitch}
-                />
+                <AutoSave autoSaveAni={autoSaveAni}/>
                 <EditNavTop/>
                 <div className="frame-edit">
                     <OptionModal 
@@ -143,10 +192,12 @@ function Edit(){
                                             idx={idx}
                                             max={max}
                                             imgs={imgs}
-                                            textsRef={textsRef}                                            
+                                            openURL={openURL}
+                                            textsRef={textsRef}
+                                            setFocusCur={setFocusCur}                                            
                                             modal_open={modal_open}
                                             modal_close={modal_close}
-                                            openURL={openURL}
+                                            ctrl_z_handler={ctrl_z_handler}
                                             img_URL_close={img_URL_close}
                                             new_textArea_focusing={new_textArea_focusing}
                                         />
@@ -167,17 +218,58 @@ export default Edit
 // autoSaveSwitch,setAutoSaveSwitch
 
 export type AutoSave_type ={
-    autoSaveSwitch:boolean
-    setAutoSaveSwitch:React.Dispatch<React.SetStateAction<boolean>>
+    autoSaveAni:boolean
 }
 
 function AutoSave({
-    autoSaveSwitch,
-    setAutoSaveSwitch
+    autoSaveAni
+    // ,setAutoSaveAni
 }:AutoSave_type){
+    const [limit,setLimit] = useState<boolean>(false)
+    const theme = useAppSelector(state => state.theme)
+
+    useEffect(()=>{
+        if(limit===false){
+            setLimit(true)
+        }else{
+            console.log('asd')
+            const tl = gsap.timeline()
+            tl.set('.container-auto-save',{
+                opacity:0,
+            })
+            tl.set('.auto-save-bar',{
+                left:"-1%"
+            })
+            tl.to('.container-auto-save',{
+                duration:0.1,
+                opacity:1,
+                ease: "power1.inOut"
+            })
+            tl.to('.auto-save-bar',{
+                left:"100%",
+                duration:2,
+                ease:"power1.inOut"
+            })
+            tl.to('.container-auto-save',{
+                duration:0.1,
+                opacity:0
+            })
+            // tl.play()
+        }
+        
+    },[autoSaveAni])
+
     return (
-        <div className="container-auto-save">
-            임시저장
+        <div className="container-auto-save" style={{
+            color:theme.textColor
+        }}>
+            <div>임시저장완료</div>
+            <div 
+                className="auto-save-bar"
+                style={{
+                    backgroundColor:theme.textColor
+                }}    
+            />
         </div>
     )
 }

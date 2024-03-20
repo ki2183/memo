@@ -1,4 +1,4 @@
-import { EditorField_type } from "../Parts_write/Editor_field/EditorField";
+import { EditorField_type } from "../Parts_write/editor_field/editor_field";
 
 interface key_handler_hooks_interface extends EditorField_type {
     text:string[],
@@ -7,6 +7,7 @@ interface key_handler_hooks_interface extends EditorField_type {
     addText_Between: ()=> void,
     del_text_Movement: ()=> void,
     add_text_Movement: ()=> void,
+    lineBreak_text: (curText: string, nextText: string) => void
     e:React.KeyboardEvent<HTMLTextAreaElement>
 }
 
@@ -17,6 +18,8 @@ function KeyboardHandlerHooks({
     textsRef,
     delText,
     addText,
+    ctrl_z_handler,
+    lineBreak_text,
     addText_Between,
     del_text_Movement,
     add_text_Movement,
@@ -26,6 +29,7 @@ function KeyboardHandlerHooks({
 
     const textArea_management = TextAreaManagement(textsRef.current[idx])
     const paragraphMax = textArea_management.checkParagraphMax()
+    const get_location = textArea_management.checkParagraph_location() 
 
     if (e.shiftKey && e.key === "Enter") return;
     else if(e.ctrlKey && e.key === "Enter"){ // ctrl+enter + add = textarea
@@ -37,38 +41,31 @@ function KeyboardHandlerHooks({
         }
         addText_Between()
         add_text_Movement()
-        textsRef.current[idx+1]?.focus()
-        
-        
+        textsRef.current[idx+1]?.focus()    
         
     }
     else if(e.key === "Enter"){ //add -> focusFunc
         e.preventDefault()
-        const get_location = textArea_management.checkParagraph_location() 
         if(get_location !== null){
             const {cursor_last_point,cursor_position,fst_parts,sec_parts} = get_location
-            console.log(cursor_last_point,cursor_position)
             if(cursor_last_point === cursor_position){ //커서가 마지막일 때 enter event
-                
-                // if(idx !== max){
-                //     addText_Between()
-                //     textsRef.current[0]?.focus()
-                 
-                //     // textsRef.current[idx+1]?.focus()
-                // }else{
-                //     addText()
-                //     new_textArea_focusing()    
-                // }
-                // else{
-                //     textsRef.current[idx+1]?.focus()
-                // }
-                    
-                // }else{
-                //     textsRef.current[idx+1]?.focus()
-                // }
+                if(idx !== max){    
+                    addText_Between()
+                    textsRef.current[idx+1]?.focus()
+                }else{
+                    addText()
+                    new_textArea_focusing() 
+                }
             }else{ //커서가 마지막이 아닐떄 enter event
-
+                if(idx!== max){
+                    lineBreak_text(fst_parts,sec_parts)
+                    textsRef.current[idx+1]?.focus()
+                }else{
+                    lineBreak_text(fst_parts,sec_parts)
+                    new_textArea_focusing()
+                }
             }
+            add_text_Movement()
         }
      
         
@@ -90,11 +87,23 @@ function KeyboardHandlerHooks({
     }else if(e.key === "Backspace"){
         
         if(idx !== 0 && text[idx] === ""){ //del -> focus
+            
             e.preventDefault()
             textsRef.current[idx-1]?.focus()
+
+            if (textsRef.current[idx - 1] !== null) {
+                textsRef.current[idx - 1]!.selectionStart = 500// '!'를 사용하여 null 체크
+                textsRef.current[idx - 1]!.selectionEnd = 500
+            }
+                    
+            
+            
             del_text_Movement()
             delText(idx)
         }
+    }else if(e.ctrlKey && e.key === "z"){
+        e.preventDefault()
+        ctrl_z_handler()
     }
 }
 

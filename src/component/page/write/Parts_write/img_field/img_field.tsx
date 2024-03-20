@@ -4,6 +4,7 @@ import { useAppSelector } from "../../../../store/hooks"
 import { computeModalInfo } from "../../Hooks_write/etcFCN"
 import { getModalInfo } from "../../../../store/slices/modalInfo"
 import { dnd_img_to_img, imgRate, imgSort } from "../../../../store/slices/imgs"
+import "./img_field.css"
 
 type ImgMolecules_type = {
     EditorField_idx:number,

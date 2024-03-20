@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useAppSelector } from "../../../../store/hooks"
 import { img_url_tf_type } from "../../edit"
+import "./url_field.css"
 import gsap from "gsap"
 
 type URLfield_type = {

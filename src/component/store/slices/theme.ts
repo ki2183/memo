@@ -10,7 +10,6 @@ export const themeSlice = createSlice({
   initialState,
   reducers: {
     changeTheme: (state) =>{
-      console.log('바뀜')
         if(state.theme === 'light'){
           localStorage.setItem('theme', JSON.stringify(darkTheme))
           return { ...state, ...darkTheme };
