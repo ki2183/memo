@@ -4,6 +4,7 @@ import  themeSlice  from './slices/theme'
 import modalInfoSlice from './slices/modalInfo';
 import textSlice from './slices/text'
 import imgsSlice from './slices/imgs';
+import NavStateSlice from './slices/navState';
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     modalInfo: modalInfoSlice,
     text:textSlice,
     urlInputCheck:urlInputCheckSlice,
-    imgs:imgsSlice
+    imgs:imgsSlice,
+    navState:NavStateSlice
   },
 })
 

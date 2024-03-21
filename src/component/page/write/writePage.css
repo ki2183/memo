@@ -11,6 +11,7 @@
 }.text-editer{
     margin-top: 150px;
     width: 50%;
+    transition: 1s all;
 
 }.outFrame-option{
     width: 80px;

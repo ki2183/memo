@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { add_text_moveMent, del_text_movement, dndImg_to_text_type, dnd_img_to_text, imgstype, pushNewImg } from "../../../../store/slices/imgs"
 import { addText, addText_between, delText, lineBreakText, writeText } from "../../../../store/slices/text"
 import { adjustTextAreaHeight, computeModalInfo } from "../../Hooks_write/etcFCN"
@@ -71,12 +71,25 @@ function EditorField({
     //#endregion
 
 
-    /** useEffect **/
+    /** textarea size event **/
     //#region
-    useLayoutEffect(()=>{
+
+    const textArea_resize = ()=>{
         if(textsRef.current && textsRef.current[idx] !== null)
             adjustTextAreaHeight(textsRef.current[idx]!)
+    }
+
+    useLayoutEffect(()=>{
+        textArea_resize()
     },[]) //초기 textarea 높이 설정
+
+    useEffect(()=>{
+            window.addEventListener('resize',textArea_resize)
+        return ()=>{
+            window.removeEventListener('resize',textArea_resize)
+        }
+    },[])
+
      //#endregion
 
     /** handler **/

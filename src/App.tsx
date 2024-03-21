@@ -29,8 +29,8 @@ function App(){
       <GlobalStyle theme={theme}/>
       <Routes>
         <Route path='/' element={<MainPage/>}/>
-        <Route path='/home' element={<MainPage/>}/>
-        <Route path='/list' element={<MainPage/>}/> 
+        <Route path='/main' element={<MainPage/>}/>
+        <Route path='/memos' element={<MainPage/>}/> 
         <Route path='/write' element={<WritePage/>}/>
         <Route path='/about' element={<MainPage/>}/>
       </Routes>

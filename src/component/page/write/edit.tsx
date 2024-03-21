@@ -40,6 +40,7 @@ function Edit(){
     const [openURL,setOpenURL] = useState<img_url_tf_type>({tf:false,idx:0})
     const text = useAppSelector(state => state.text)
     const imgs = useAppSelector(state => state.imgs)
+    const navState = useAppSelector(state => state.navState)
     const [prevStack,setPrevStack] = useState<prevStack_type[]>([])
     const prevStackLimitRef = useRef<boolean>(false)
     const ctrl_z_LimitRef = useRef<boolean>(false)
@@ -58,13 +59,27 @@ function Edit(){
     }
 
     useEffect(()=>{
+        if(navState.nav_total){
+            gsap.to('.frame-edit',{
+                x:0,
+                duration:0.5,
+            })
+        }else{
+            gsap.to('.frame-edit',{
+                x:-135,
+                duration:0.5,
+            })
+        }
+    },[navState])
+
+    useEffect(()=>{
         const timer = setTimeout(()=>{
             setMemoDTO()
         },2 * 60 * 1000) 
         return ()=>{
             clearTimeout(timer)
         }
-    },[setMemoDTO])
+    },[setMemoDTO]) //임시저장
 
     useEffect(()=>{
         const dto = {   
@@ -91,10 +106,6 @@ function Edit(){
             ctrl_z_LimitRef.current = false
         }
     },[text,imgs]) //ctrl + z 할 스택들
-
-    useEffect(()=>{
-        // console.log(prevStack)
-    },[prevStack])
 
     useLayoutEffect(()=>{
         const getDto_JSON = localStorage.getItem("memo")

@@ -1,9 +1,14 @@
 .frame-edit{
-    display: grid;
-    grid-template-columns: auto 720px auto;
+    /* display: grid; */
+    display: flex;
+    flex-direction: column;
+    /* grid-template-columns: auto 720px auto; */
     margin-top: 202.5px;
+    max-width: 720px;
     width: 100%;
     height:100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 .title-edit{
     width: 100%;
