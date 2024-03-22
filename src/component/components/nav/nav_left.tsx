@@ -1,23 +1,12 @@
 import gsap from "gsap"
-import "./editerNav.css"
-import { ReactNode, useEffect, useRef, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../store/hooks"
-import { changeTheme } from "../store/slices/theme"
+import "./nav_left.css"
+import { useEffect, useRef } from "react"
+import { useAppSelector } from "../../store/hooks"
 import { useDispatch } from "react-redux"
-import { change_nav_menu, change_nav_total } from "../store/slices/navState"
+import { change_nav_menu, change_nav_total } from "../../store/slices/navState"
 import { useLocation, useNavigate } from "react-router-dom"
 
-function EditNav(){
-    return(
-        <>
-            <EditNavRight/>
-        </>
-    )
-}
-
-export default EditNav
-
-function EditNavRight(){
+export function NavRight(){
 
     const theme = useAppSelector(state => state.theme)
     const { nav_menu,nav_total } = useAppSelector(state => state.navState)
@@ -44,9 +33,9 @@ function EditNavRight(){
     const max = li_arr.length-1
 
     useEffect(()=>{
-        console.log(nav_total)
+        const tl = gsap.timeline()
         if(nav_total === false){
-            const tl = gsap.timeline()
+            
             tl.to('.container-edit-nav-left',{
                 duration:0.5,
                 left:"-271px",
@@ -82,13 +71,11 @@ function EditNavRight(){
             })
         }
         
+        return ()=>{
+            tl.kill()
+        }
     },[nav_total])
 
-    useEffect(()=>{
-        console.log(nav_menu)
-
-    
-    },[nav_menu])
 
     const onClick_handler_nav_total = (e:React.MouseEvent<HTMLSpanElement>) => {
         e.preventDefault()
@@ -142,6 +129,9 @@ function EditNavRight(){
                     </ul>
                 </div>
                 
+            </div>
+            <div >
+
             </div>
         </div>
     )
@@ -261,6 +251,9 @@ function NavRightLi({idx,title,max,onclick_FNC}:NavRightLi_type){
                 },0.2)
             }
         }
+        return ()=>{
+            tl.kill()
+        }
     },[nav_menu])
 
     const li_up_style_1 = {
@@ -287,7 +280,7 @@ function NavRightLi({idx,title,max,onclick_FNC}:NavRightLi_type){
             e.preventDefault()
             onclick_FNC()
         }} >
-                            <div className="container-line-li ">
+                            <div className="container-line-li">
                                 <div>
                                     <div ref={fstRef} style={li_up_style_1}/>
                                 </div>
@@ -312,47 +305,3 @@ function NavRightLi({idx,title,max,onclick_FNC}:NavRightLi_type){
                         </li>
     )
 } 
-interface AnimationMenu_type{
-    idx:number
-    max:number
-    children : ReactNode
-}
-
-export function EditNavTop(){ 
-
-    const [themeTween, setThemeTween] = useState<GSAPTween | null>();
-    const theme = useAppSelector(state => state.theme)
-    
-    const dispatch = useAppDispatch()
-
-    useEffect(() => {
-        const tween = gsap.to('.theme-button', {
-            duration: 0.3,
-            ease: "back.inOut",
-            x: "-85%",
-        });
-        setThemeTween(tween);
-    }, []);
-
-    useEffect(() => {
-        if (themeTween) {
-            if (theme.theme === 'light') {
-                themeTween.play();
-            } else {
-                themeTween.reverse();
-            }
-        }
-    }, [theme, themeTween]);
-
-
-    return(
-        <div className="container-edit-nav-top">
-            <button className="frame-theme" onClick={e=>{
-                e.preventDefault()
-                dispatch(changeTheme())
-            }}>
-                <div className="theme-button"/>
-            </button>
-        </div>
-    )
-}

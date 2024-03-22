@@ -6,7 +6,8 @@ export const lightTheme = {
     navColor:"#0000000f",
     navBorder:"#0000001a",
     theme:"light",
-    modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))"
+    modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))",
+    li_BorderColor:"#bebebe",
   };
   
   export const darkTheme = {
@@ -17,7 +18,8 @@ export const lightTheme = {
     navColor:"#ffffff04",
     navBorder:"#ffffff1a",
     theme:"dark",
-    modalBackground: "linear-gradient(161deg, rgb(81, 81, 81), rgb(51, 51, 51))"
+    modalBackground: "linear-gradient(161deg, rgb(81, 81, 81), rgb(51, 51, 51))",
+    li_BorderColor:"#929292",
   };
   
   export type themeType = typeof lightTheme

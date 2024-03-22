@@ -1,11 +1,10 @@
-import EditNav from "../../components/editerNav"
-import Nav from "../../components/nav/nav"
+
+import { NavRight } from '../../components/nav/nav_left'
 import './mainPage.css'
 function MainPage(){
     return(
         <div className="w-screen h-screen flex">
-            {/* <Nav/> */}
-            <EditNav></EditNav>
+            <NavRight/>
             <MainPageContainer/>
         </div>
     )

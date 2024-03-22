@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from "react-dnd-html5-backend";
 import OptionModal from "./Parts_write/modal/editModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { EditNavTop } from "../../components/editerNav";
+import { NavTop } from "../../components/nav/nav_top";
 import { title_hooks_keyDown, title_hooks_onChange } from "./Hooks_write/titlehooks";
 import EditorField from "./Parts_write/editor_field/editor_field";
 import { adjustTextAreaHeight } from "./Hooks_write/etcFCN";
@@ -170,7 +170,7 @@ function Edit(){
         <DndProvider backend={HTML5Backend}>
             <div className="container-edit">
                 <AutoSave autoSaveAni={autoSaveAni}/>
-                <EditNavTop/>
+                <NavTop/>
                 <div className="frame-edit">
                     <OptionModal 
                         textsRef={textsRef}

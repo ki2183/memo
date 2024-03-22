@@ -5,6 +5,7 @@ import modalInfoSlice from './slices/modalInfo';
 import textSlice from './slices/text'
 import imgsSlice from './slices/imgs';
 import NavStateSlice from './slices/navState';
+import pageNumberSlice from './slices/page';
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     text:textSlice,
     urlInputCheck:urlInputCheckSlice,
     imgs:imgsSlice,
-    navState:NavStateSlice
+    navState:NavStateSlice,
+    pageNumber:pageNumberSlice
   },
 })
 

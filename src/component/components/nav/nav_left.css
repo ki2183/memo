@@ -135,7 +135,9 @@
     user-select: none;
 }
 /* --------------------------------------------------- */
-
+.container-nav-top>div{
+    font-family: monospace;
+}
 .container-edit-nav-top{
     position: absolute;
     padding-right: 2rem;

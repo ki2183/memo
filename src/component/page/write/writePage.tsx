@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from "react"
-import Nav from "../../components/nav/nav"
 import './writePage.css'
-import { text } from "stream/consumers"
-import EditNav, { EditNavTop } from "../../components/editerNav"
+import { NavRight } from "../../components/nav/nav_left"
 import Edit from "./edit"
 
 function WritePage(){
     return(
         <div className="h-screen flex">
-            <EditNav/>
+            <NavRight/>
             <WritePageContainer/>
         </div>
     )

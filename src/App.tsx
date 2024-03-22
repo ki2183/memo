@@ -7,6 +7,7 @@ import WritePage from './component/page/write/writePage';
 import { useEffect } from 'react';
 import { themeType } from './style/theme';
 import { changeTheme } from './component/store/slices/theme';
+import MemosPage from './component/page/memos/memosPage';
 
 
 
@@ -30,7 +31,7 @@ function App(){
       <Routes>
         <Route path='/' element={<MainPage/>}/>
         <Route path='/main' element={<MainPage/>}/>
-        <Route path='/memos' element={<MainPage/>}/> 
+        <Route path='/memos' element={<MemosPage/>}/> 
         <Route path='/write' element={<WritePage/>}/>
         <Route path='/about' element={<MainPage/>}/>
       </Routes>
