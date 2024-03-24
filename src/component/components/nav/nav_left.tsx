@@ -109,7 +109,7 @@ export function NavRight(){
 
                     <div className="nav-option-all" style={nav_all_style} onClick={onClick_handler_nav_menu}>
                         <span className="nav-option-button">
-                            <span>{nav_menu === false ? "-" : "+"}</span>
+                            <span>{nav_menu === false ? "+" : "-"}</span>
                         </span>
                         <span>all</span>
                     </div>

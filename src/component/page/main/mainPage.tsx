@@ -1,21 +1,16 @@
 
-import { NavRight } from '../../components/nav/nav_left'
+import Page from '../Page'
 import './mainPage.css'
+import { MainFst } from './parts/main_fst'
 function MainPage(){
+
     return(
-        <div className="w-screen h-screen flex">
-            <NavRight/>
-            <MainPageContainer/>
-        </div>
+        <Page>
+            <div className="w-full h-full flex justify-center ">
+                <MainFst/>
+            </div>
+        </Page>
     )
 }
 
 export default MainPage
-
-function MainPageContainer(){
-    return(
-        <div className="container-mainPage">
-
-        </div>
-    )
-}

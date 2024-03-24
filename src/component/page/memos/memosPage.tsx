@@ -24,7 +24,6 @@ export type memo_dto = {
 function MemosPage(){
 
     const {pageNum,pageMax} = useAppSelector(state => state.pageNumber)
-    const {nav_total} = useAppSelector(state => state.navState)
     const [jsx_arr,setJsx_Arr] = useState<JSX.Element[]>([])
     const [dto,setDto] = useState<test_type[]>([])
     const dispatch = useAppDispatch()
@@ -52,7 +51,7 @@ function MemosPage(){
     },{
         date:"2024-03-22",
         title:"우리의 밤을 외워요",
-        text:["다가온 이별을 알아요 밤비..."],
+        text:["다가온 이별을 알아요 밤 비..."],
         img:[],
     },{
         date:"2024-03-22",
@@ -176,6 +175,9 @@ function MemosLI({
     const {pageNum} = useAppSelector(state => state.pageNumber)
     const bottomBorderRef = useRef<HTMLDivElement>(null)
     const rightBorderRef = useRef<HTMLDivElement>(null)
+    const spanRef1 = useRef<HTMLSpanElement>(null)
+    const spanRef2 = useRef<HTMLSpanElement>(null)
+    const spanRef3 = useRef<HTMLSpanElement>(null)
 
     let border = theme === 'dark' ? `1px solid ${li_BorderColor}` : `2px solid ${li_BorderColor}`
     
@@ -197,6 +199,30 @@ function MemosLI({
             duration:0.4,
             transformOrigin:"right"
         },(0.2 + 0.1*idx))
+        tl.fromTo(spanRef1.current,{
+            x:-5,
+            opacity:0,
+        },{
+            duration:0.2,
+            opacity:1,
+            x:0
+        },0 + 0.1*idx)
+        tl.fromTo(spanRef2.current,{
+            x:-5,
+            opacity:0,
+        },{
+            duration:0.2,
+            opacity:1,
+            x:0
+        },0 + 0.15*idx)
+        tl.fromTo(spanRef3.current,{
+            x:-5,
+            opacity:0,
+        },{
+            duration:0.2,
+            opacity:1,
+            x:0
+        },0 + 0.2*idx)
         
     },[pageNum])
 
@@ -205,9 +231,9 @@ function MemosLI({
             <div ref={bottomBorderRef} className="memo-frame-li-in-mirror" style={{borderBottom:border}}/>
             <div ref={rightBorderRef} className="memo-frame-li-in-mirror" style={{borderRight:border}}/>
             <div className="memo-frame-li-in">
-                <span>{title}</span>
-                <span>{date}</span>
-                <span>{overText(text[0])}</span>
+                <span ref={spanRef1}>{title}</span>
+                <span ref={spanRef2}>{date}</span>
+                <span ref={spanRef3}>{overText(text[0])}</span>
             </div>
 
         </li>

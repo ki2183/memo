@@ -17,7 +17,8 @@
     margin-bottom: 32px;
 }.memos-frame-ul{
     max-width: var(--width-memos);
-    height: auto;
+    /* height: auto; */
+    height: 543px;
     /* background-color: rgba(240, 248, 255, 0.235); */
     display: grid;
     grid-auto-rows: var(--height-li);

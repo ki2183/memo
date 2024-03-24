@@ -8,6 +8,7 @@ export const lightTheme = {
     theme:"light",
     modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))",
     li_BorderColor:"#bebebe",
+    svg_color:"#1d1d1d"
   };
   
   export const darkTheme = {
@@ -20,6 +21,7 @@ export const lightTheme = {
     theme:"dark",
     modalBackground: "linear-gradient(161deg, rgb(81, 81, 81), rgb(51, 51, 51))",
     li_BorderColor:"#929292",
+    svg_color:"#d1d1d1"
   };
   
   export type themeType = typeof lightTheme
