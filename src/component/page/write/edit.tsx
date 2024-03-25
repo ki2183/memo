@@ -11,6 +11,7 @@ import { adjustTextAreaHeight } from "./Hooks_write/etcFCN";
 import { change_imgs, imgstype } from "../../store/slices/imgs";
 import { changeText_arr } from "../../store/slices/text";
 import gsap from "gsap";
+import { EditorSave } from "./Parts_write/editor_save/editor_save";
 
 export type img_url_tf_type = {
     tf:boolean,
@@ -219,6 +220,7 @@ function Edit(){
                         </div>
                     </div>
                 </div>
+                <EditorSave/>
             </div>
         </DndProvider>
     )
