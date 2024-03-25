@@ -9,9 +9,6 @@ export function EditorSave(){
     const [width,setWidth] = useState(0)
     
     const resize_func = () => setWidth(window.innerWidth)
-    
-
-    // 1100 + 270 이하면 small
 
     useEffect(()=>{
         resize_func()
@@ -31,7 +28,8 @@ type EditorSaveBigWindow_type = {
 }
 
 function EditorSaveBigWindow({width}:EditorSaveBigWindow_type){
-    const {textColor,bgColor} =  useAppSelector(state => state.theme)
+    const theme =  useAppSelector(state => state.theme)
+    const {textColor,bgColor,li_BorderColor} = theme
     const saveWindow = useRef<HTMLDivElement>(null)
     const ballRef = useRef<HTMLDivElement>(null)
     const ball2Ref = useRef<HTMLDivElement>(null)
@@ -56,14 +54,14 @@ function EditorSaveBigWindow({width}:EditorSaveBigWindow_type){
             top:"20%",
             width:"3rem",
             height:"3rem",
-            border: `2px solid ${textColor}`
+            border: `2px solid ${li_BorderColor}`
         })
         gsap.set(ball3Ref.current, {
             xPercent: -50, yPercent: -50,
             top:"20%",
             width:"4rem",
             height:"4rem",
-            border: `2px solid ${textColor}`
+            border: `2px solid ${li_BorderColor}`
         })
 
 
@@ -145,7 +143,7 @@ function EditorSaveBigWindow({width}:EditorSaveBigWindow_type){
                 MouseLeaveBall_fnc(ball3Ref)
             })
         }
-    },[])
+    },[theme])
 
     return(
         <div  className=" flex flex-col fixed top-0 right-0" style={bigStyle}>
@@ -172,8 +170,6 @@ function EditorSaveBigWindow({width}:EditorSaveBigWindow_type){
 }
 
 function EditorSaveSmallWindow(){
-
-
 
     return(
         <div style={{
