@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { themeType } from './style/theme';
 import { changeTheme } from './component/store/slices/theme';
 import MemosPage from './component/page/memos/memosPage';
+import LoginPage from './component/page/login/login';
 
 
 
@@ -34,6 +35,7 @@ function App(){
         <Route path='/memos' element={<MemosPage/>}/> 
         <Route path='/write' element={<WritePage/>}/>
         <Route path='/about' element={<MainPage/>}/>
+        <Route path='/login' element={<LoginPage/>}/>
       </Routes>
     </>
     
