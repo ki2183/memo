@@ -9,6 +9,7 @@ import { themeType } from './style/theme';
 import { changeTheme } from './component/store/slices/theme';
 import MemosPage from './component/page/memos/memosPage';
 import LoginPage from './component/page/login/login';
+import JoinPage from './component/page/join/join';
 
 
 
@@ -36,6 +37,7 @@ function App(){
         <Route path='/write' element={<WritePage/>}/>
         <Route path='/about' element={<MainPage/>}/>
         <Route path='/login' element={<LoginPage/>}/>
+        <Route path='/join' element={<JoinPage/>}/>
       </Routes>
     </>
     
