@@ -1,0 +1,21 @@
+.edit-img{
+    width: auto;
+    margin-left: 30px;
+    max-width: 690px;
+    height: 100%;
+    display: grid;
+    grid-template-columns:0px auto 30px;
+}.edit-img-frame:nth-child(1){
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* .edit-img-frame>img{
+    
+} */
+.edit-img-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0px;
+}
