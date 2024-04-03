@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { changePageMax, changePageNum } from "../../store/slices/page"
 import { computePageMax, getPageInfo, overText } from "./hooks/pagehooks"
+import axios from "axios"
+import { useQuery } from "react-query"
 
 type test_type = {
     date:string,
@@ -27,6 +29,22 @@ function MemosPage(){
     const [jsx_arr,setJsx_Arr] = useState<JSX.Element[]>([])
     const [dto,setDto] = useState<test_type[]>([])
     const dispatch = useAppDispatch()
+    const token = localStorage.getItem('token')
+    const { isLoading, error, data } = useQuery('memolist', () =>
+    axios.post('/memos/memoList',token)
+        .then((res) => res.data)
+        .catch(err => err)
+  );
+
+    useEffect(()=>{
+        axios.post('/memos/memoList',token)
+        .then((res) => res.data)
+        .catch(err => err)
+    },[])
+
+  useEffect(()=>{
+    console.log(data)
+  },[data])
     
     const testDto = [{
         date:"2024-03-22",
