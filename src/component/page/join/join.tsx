@@ -19,16 +19,20 @@ export interface join_check_type extends join_type {
 function JoinPage(){
 
     const navigate = useNavigate()
-    const {fail_check} = formHooks()
-    const inputRefs = useRef<Array<HTMLInputElement|null>>([])
+    const {fail_check,warning_animation_span} = formHooks()
+
+    const inputRefs = useRef<Array<HTMLInputElement|null>>([null])
+    const warningRefs = useRef<HTMLSpanElement>(null)
+    const joinButtonRef = useRef<HTMLButtonElement>(null)
     const [id_check,setId_check] = useState<boolean|null>(null)
+    const limitRef =  useRef<boolean>(false)
     const [formDto,setFormDto] = useState<join_check_type>({
         user_id:"",
         password:"",
         password_check:"",
         name:"",
     })
-    const joinCheckRef = useRef<string>("false")
+    const [essential_condition,setEssential_condition] = useState<string>('false')
     
     const formChangeHanler = (e:React.ChangeEvent<HTMLInputElement>,type:"user_id"|"password_check"|"password"|"name") =>{
         e.preventDefault()
@@ -36,27 +40,25 @@ function JoinPage(){
         if(type === "user_id") setId_check(null)
     }
 
-    const checkId_api = (e:React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
+    const checkId_api = () => {
         if(formDto.user_id === ''){
-            alert('공백입니다.')
             return 
         }
         axios.post('/memos/checkId',{userId:formDto.user_id})
             .then(res => {
-                setId_check(res.data)
+                const tf = res.data
+                setId_check(tf)
+                if(!tf && warningRefs) warning_animation_span(warningRefs)
+                
             }).catch(err => console.log(err))
-    }
+        }
 
     const join_api = (e:React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         const { user_id,password,name } = formDto
-        if((user_id === "" || password === "") || name === ""){
-            const t = fail_check(formDto,id_check)
-            joinCheckRef.current = fail_check(formDto,id_check)
-            alert(t)
-            return
-        }
+        limitRef.current = true
+        if(essential_condition !== "true") return
+
         const sendDto = {
             user_id:user_id,
             password:password,
@@ -70,6 +72,8 @@ function JoinPage(){
 
     useEffect(()=>{
         console.log(formDto)
+        if(limitRef.current === true)
+            setEssential_condition(fail_check(formDto,id_check))
     },[formDto])
 
     return(
@@ -79,52 +83,71 @@ function JoinPage(){
                     <div className='h-auto w-80 flex flex-col'>
                         <div className='grid gap-2 items-center' style={{gridTemplateColumns:"3fr 0.9fr"}}>
                             <Input_text_join   
-                            idx={0}
-                            classname=""
-                            ref={inputRefs}
-                            input_type='text'
-                            placeholder="아이디"
-                            change_type='user_id'
-                            onChangeHandler={formChangeHanler}
+                                idx={0}
+                                classname=""
+                                inputRefs={inputRefs}
+                                input_type='text'
+                                placeholder="아이디"
+                                change_type='user_id'
+                                onChangeHandler={formChangeHanler}
                             
                             />
-                            <button className='w-full h-8 text-xs' onClick={checkId_api}>중복확인</button>
+                            <button className='w-full h-8 text-xs' onClick={e=>{
+                                e.preventDefault()
+                                checkId_api()
+                            }}>중복확인</button>
                         </div>
 
-                        <span className={`mt-1 mb-3 text-xs font-mono ${id_check === true ? "text-green-500" : (id_check === null ? "text-gray-400":"text-red-500")}`}>
+                        <span 
+                        ref={warningRefs}
+                        // ref={el=>{
+                        //     if(warningRefs.current && warningRefs.current[0])
+                        //         warningRefs.current[0] = el
+                        // }} 
+                        className={`mt-1 mb-3 text-xs font-mono ${id_check === true ? "text-green-500" : (id_check === null ? "text-gray-400":"text-red-500")}`}>
                             { id_check === true ? "사용가능한 아이디입니다.": (id_check === null ? "중복체크 필수입니다." : "사용 불가능한 아이디입니다.")}
                         </span>
 
                         <Input_text_join   
                             idx={1}
                             classname=""
-                            ref={inputRefs}
+                            inputRefs={inputRefs}
                             input_type='text'
                             placeholder="닉네임"
                             change_type='name'
                             onChangeHandler={formChangeHanler}
                         />
 
-                        <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
-                            하하
-                        </span>
+                        {
+                            essential_condition === "name" ? (
+                                <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
+                                    닉네임을 입력하세요.
+                                </span>
+                                ) : (null)
+                        }
 
                         <Input_text_join   
                             idx={2}
                             classname=""
-                            ref={inputRefs}
+                            inputRefs={inputRefs}
                             input_type='password'
                             placeholder="비밀번호"
                             change_type='password'
                             onChangeHandler={formChangeHanler}
                         />
 
-                        <span className='mb-3'></span>
+                        {
+                            essential_condition === "password" ? (
+                                <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
+                                    비밀번호를 입력하세요.
+                                </span>
+                                ) : (null)
+                        }
 
                         <Input_text_join   
                             idx={3}
                             classname=""
-                            ref={inputRefs}
+                            inputRefs={inputRefs}
                             input_type='password'
                             placeholder="비밀번호 확인"
                             change_type='password_check'
@@ -132,9 +155,19 @@ function JoinPage(){
 
                         />
 
-                        <span className='mb-3'></span>
+                        {
+                            essential_condition === "password_check" ? (
+                                <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
+                                    비밀번호가 일치하지 않습니다.
+                                </span>
+                                ) : (null)
+                        }
 
-                        <button className='h-9' onClick={join_api}>가입</button>
+                        <button 
+                            className='h-9' 
+                            onClick={join_api}
+                            ref={joinButtonRef}
+                        >가입</button>
                     </div>
                 </div>
             </div>
