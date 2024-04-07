@@ -1,6 +1,12 @@
-import { MutableRefObject, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { action_RefHooks } from "../../page/login/loginHooks"
 import { useAppSelector } from "../../store/hooks"
+import { formHooks } from "../../page/join/joinHooks"
+
+const {keyboard_Hooks_id,keyboard_Hooks_etc} = formHooks()
+
+type onKeyHandler_type = typeof keyboard_Hooks_etc
+type onKeyHandler_id_type = typeof keyboard_Hooks_id
 
 type Input_text_join_type = {
     idx:number
@@ -9,9 +15,11 @@ type Input_text_join_type = {
     placeholder:string,
     inputRefs:React.MutableRefObject<(HTMLInputElement | null)[]>
     change_type:"user_id"|"password_check"|"password"|"name",
+    joinButtonRef:React.RefObject<HTMLButtonElement>
     onChangeHandler:(e:React.ChangeEvent<HTMLInputElement>,type:"user_id"|"password_check"|"password"|"name")=>void
-    onKeyHandler?:(e:React.KeyboardEvent<HTMLInputElement>) => void,
-    onKeyHandler_id?:(e:React.KeyboardEvent<HTMLInputElement>) => void
+    onKeyHandler?:onKeyHandler_type,
+    checkId_api?:()=>void
+    onKeyHandler_id?:onKeyHandler_id_type
 }
 
 export function Input_text_join({
@@ -21,7 +29,9 @@ export function Input_text_join({
         input_type,
         placeholder,
         change_type,
+        checkId_api,
         onKeyHandler,
+        joinButtonRef,
         onChangeHandler,
         onKeyHandler_id,
     }:Input_text_join_type){
@@ -50,17 +60,14 @@ export function Input_text_join({
 
     return <div className={`${classname} w-full h-9 flex flex-col`}>
         <input 
-            ref={el => {
-                if(inputRefs.current && inputRefs.current[idx])
-                    inputRefs.current[idx] = el
-            }}
+            ref={el =>{inputRefs.current[idx] = el}}
             type={input_type}
             placeholder={placeholder} 
             className="bg-transparent outline-none w-full h-full font-mono" 
             onFocus={focus_handler}
             onBlur={blur_handler}
             onKeyDown={(e) => {
-                return onKeyHandler ? onKeyHandler(e) : (onKeyHandler_id ? onKeyHandler_id(e) : null);
+                return onKeyHandler ? onKeyHandler(idx,e,joinButtonRef,inputRefs) : ((onKeyHandler_id && checkId_api ) ? onKeyHandler_id(checkId_api,e,inputRefs,) : null);
             }}
             
             onChange={e=>{onChangeHandler(e,change_type)}}>

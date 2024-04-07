@@ -220,7 +220,7 @@ function Edit(){
                         </div>
                     </div>
                 </div>
-                <EditorSave/>
+                <EditorSave title={title}/>
             </div>
         </DndProvider>
     )

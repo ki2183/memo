@@ -3,7 +3,7 @@ import Page from '../Page'
 import { useNavigate } from 'react-router-dom'
 import { LoginHooks, action_RefHooks, login_type } from './loginHooks'
 import { useAppSelector } from '../../store/hooks'
-import { transform } from 'typescript'
+
 
 function LoginPage(){
 
@@ -52,7 +52,7 @@ function LoginPage(){
             await login_handler({e,inputDto,navigate})       
             setWarning_text('login_fail')
             nullCheck = 'login_fail'
-            alert('일치하는 정보가 없습니다!')
+            // alert('일치하는 정보가 없습니다!')
         }
         warning_animation(frameRef)
     }

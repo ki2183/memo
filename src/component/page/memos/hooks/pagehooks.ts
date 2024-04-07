@@ -29,9 +29,10 @@ export const getPageInfo = ({
 }:getPageInfo) => {
     const startIdx = pageNum * postsPerPage
     const endIdx = startIdx + postsPerPage
-    const memo_dto_mirror = memo_dto.slice(startIdx,endIdx)
+    const memo_dto_array = Array.isArray(memo_dto) ? memo_dto : [];
+    const sliced_memo_dto = memo_dto_array.slice(startIdx, endIdx);
 
-    return memo_dto_mirror
+    return sliced_memo_dto
 }
 
 export const overText =  (text:string) => {

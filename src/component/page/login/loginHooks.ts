@@ -33,11 +33,12 @@ export function LoginHooks(){
         e.preventDefault()
         try{
             const res = await axios.post('/memos/login',inputDto) as any
-            if(!res.data || !res.data.token) return null
+            if(!res.data || !res.data.token) { alert("일치하는 정보가 없습니다."); return null}
             localStorage.setItem('token',JSON.stringify(res.data))
             console.log(localStorage.getItem('token'))
             navigate('/main')
         }catch{
+            console.log("server_api_err")
             return null
         }        
     }//토큰get ? (-> mainPage) : 동작을 안하는

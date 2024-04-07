@@ -1,7 +1,17 @@
 :root{
     --theme-button-width : 2rem
 }
-
+.login-button{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    background-color: rgba(116, 116, 116, 0.08);
+}
 .container-edit-nav-left{
     width: 270px;
     height: 100%;
@@ -26,23 +36,33 @@
     flex-direction: column;
 }
 .nav-title{
-    display: flex;
+    display: grid;
+    grid-template-columns: 270px auto;
     align-items: center;
     justify-content: space-between;
     height: 3rem;
-    display: flex;
     /* padding: 0.7rem; */
     font-family: monospace;
     font-weight: 100;
     font-style: normal;
+}.frame-nav-title-login{
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}.frame-nav-title-login>span{
+    margin-left: 1rem;
+    margin-right: 1rem;
+}.frame-nav-title-login>span:nth-child(2){
+    font-size: small;
+    cursor: pointer;
 }
-.nav-title>span{
+.nav-total-handle-button{
     height: 100%;
     width: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.7rem;
+    /* margin-left: 0.7rem; */
 }
 .nav-title>span:nth-child(2){
     user-select: none;

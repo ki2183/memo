@@ -32,6 +32,10 @@ export const GlobalStyle = createGlobalStyle`
     button:hover{
         background-color: ${({ theme }: { theme: any }) => theme.navColorHover};
     }
+
+    button:focus{
+        background-color: ${({ theme }: { theme: any }) => theme.navColorHover};
+    }    
     
     input:-webkit-autofill,
     input:-webkit-autofill:hover,

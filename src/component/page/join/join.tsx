@@ -5,6 +5,7 @@ import { QueryClient, useQueryClient } from 'react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Input_text_join } from '../../components/input/inputJoin'
 import { formHooks } from './joinHooks'
+import gsap from 'gsap'
 
 type join_type = {
     user_id: string
@@ -19,13 +20,15 @@ export interface join_check_type extends join_type {
 function JoinPage(){
 
     const navigate = useNavigate()
-    const {fail_check,warning_animation_span} = formHooks()
+    const {fail_check,warning_animation_span,keyboard_Hooks_id,keyboard_Hooks_etc,id_char_check,fail_check_get_num} = formHooks()
 
     const inputRefs = useRef<Array<HTMLInputElement|null>>([null])
     const warningRefs = useRef<HTMLSpanElement>(null)
+    const errSpanRefs = useRef<Array<HTMLSpanElement|null>>([])
     const joinButtonRef = useRef<HTMLButtonElement>(null)
     const [id_check,setId_check] = useState<boolean|null>(null)
     const limitRef =  useRef<boolean>(false)
+    const joinLimitRef = useRef<boolean>(false)
     const [formDto,setFormDto] = useState<join_check_type>({
         user_id:"",
         password:"",
@@ -48,8 +51,9 @@ function JoinPage(){
             .then(res => {
                 const tf = res.data
                 setId_check(tf)
-                if(!tf && warningRefs) warning_animation_span(warningRefs)
-                
+                if(!tf && warningRefs) warning_animation_span(errSpanRefs,0)
+                tf ? inputRefs.current[1]?.focus() :inputRefs.current[0]?.focus()
+                console.log(inputRefs.current)
             }).catch(err => console.log(err))
         }
 
@@ -57,17 +61,35 @@ function JoinPage(){
         e.preventDefault()
         const { user_id,password,name } = formDto
         limitRef.current = true
-        if(essential_condition !== "true") return
+        if(essential_condition !== "true"){
+            limitRef.current = true
+            const failCheck = fail_check(formDto,id_check)
+            const idx = fail_check_get_num(failCheck)
+            setEssential_condition(failCheck)
+            if(idx)
+                inputRefs.current[idx]?.focus()
+            return
+        }
 
         const sendDto = {
             user_id:user_id,
             password:password,
             name:name
         }
-
-        // axios.post('/memos/newUser',sendDto)
-        // .then(res => alert("성공"))
-        // .catch(err => console.log(err))
+        if(!joinLimitRef.current){
+            joinLimitRef.current = true
+            axios.post('/memos/join',sendDto)
+                .then(res => {
+                    joinLimitRef.current = false
+                    alert("가입 완료했습니다. 환영합니다!")
+                    navigate('/login')
+                })
+                .catch(err => {
+                    console.log(err)
+                    joinLimitRef.current = false
+                })
+        }
+        
     }
 
     useEffect(()=>{
@@ -75,6 +97,10 @@ function JoinPage(){
         if(limitRef.current === true)
             setEssential_condition(fail_check(formDto,id_check))
     },[formDto])
+
+    useEffect(()=>{
+        console.log(errSpanRefs.current)
+    },[])
 
     return(
         <Page>
@@ -84,12 +110,16 @@ function JoinPage(){
                         <div className='grid gap-2 items-center' style={{gridTemplateColumns:"3fr 0.9fr"}}>
                             <Input_text_join   
                                 idx={0}
+                                checkId_api={checkId_api}
+                                key={0}
                                 classname=""
                                 inputRefs={inputRefs}
                                 input_type='text'
                                 placeholder="아이디"
                                 change_type='user_id'
+                                joinButtonRef={joinButtonRef}
                                 onChangeHandler={formChangeHanler}
+                                onKeyHandler_id={keyboard_Hooks_id}
                             
                             />
                             <button className='w-full h-8 text-xs' onClick={e=>{
@@ -99,13 +129,26 @@ function JoinPage(){
                         </div>
 
                         <span 
-                        ref={warningRefs}
-                        // ref={el=>{
-                        //     if(warningRefs.current && warningRefs.current[0])
-                        //         warningRefs.current[0] = el
-                        // }} 
-                        className={`mt-1 mb-3 text-xs font-mono ${id_check === true ? "text-green-500" : (id_check === null ? "text-gray-400":"text-red-500")}`}>
-                            { id_check === true ? "사용가능한 아이디입니다.": (id_check === null ? "중복체크 필수입니다." : "사용 불가능한 아이디입니다.")}
+                        ref={
+                            el=>errSpanRefs.current[0] = el
+                        }
+                        className={`err-span mt-1 mb-3 text-xs font-mono ${id_check === true ? "text-green-500" : (id_check === false ? "text-red-500":(limitRef.current === true ? "text-red-500":"text-gray-400"))}`}>
+                   
+                                {
+                                    !id_char_check(formDto.user_id) ?
+                                        "특수문자 공백 한글 불가능":
+                                        (formDto.user_id.length < 6 ?
+                                            "6자 이상":
+                                            (
+                                                id_check === null ?
+                                                    "중복 체크 필수입니다.":
+                                                    id_check === true ?
+                                                        "사용가능한 아이디입니다.":
+                                                        "사용불가능한 아이디입니다."   
+                                            )
+                                        )
+                                        
+                                }
                         </span>
 
                         <Input_text_join   
@@ -116,11 +159,15 @@ function JoinPage(){
                             placeholder="닉네임"
                             change_type='name'
                             onChangeHandler={formChangeHanler}
+                            joinButtonRef={joinButtonRef}
+                            key={1}
+                            onKeyHandler={keyboard_Hooks_etc}
                         />
 
                         {
                             essential_condition === "name" ? (
-                                <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
+                                <span
+                                className='err-span mt-1 mb-3 text-xs font-mono text-red-500'>
                                     닉네임을 입력하세요.
                                 </span>
                                 ) : (null)
@@ -134,17 +181,24 @@ function JoinPage(){
                             placeholder="비밀번호"
                             change_type='password'
                             onChangeHandler={formChangeHanler}
+                            joinButtonRef={joinButtonRef}
+                            key={2}
+                            onKeyHandler={keyboard_Hooks_etc}
                         />
 
                         {
                             essential_condition === "password" ? (
                                 <span className='mt-1 mb-3 text-xs font-mono text-red-500'>
-                                    비밀번호를 입력하세요.
+                                    {
+                                        formDto.password.length === 0 ?
+                                        "비밀번호를 입력하세요.":
+                                        "6자리 이상 입력하세요."
+                                    }
                                 </span>
                                 ) : (null)
                         }
 
-                        <Input_text_join   
+                         <Input_text_join   
                             idx={3}
                             classname=""
                             inputRefs={inputRefs}
@@ -152,6 +206,9 @@ function JoinPage(){
                             placeholder="비밀번호 확인"
                             change_type='password_check'
                             onChangeHandler={formChangeHanler}
+                            joinButtonRef={joinButtonRef}
+                            key={3}
+                            onKeyHandler={keyboard_Hooks_etc}
 
                         />
 
@@ -161,9 +218,10 @@ function JoinPage(){
                                     비밀번호가 일치하지 않습니다.
                                 </span>
                                 ) : (null)
-                        }
+                        } 
 
                         <button 
+                            disabled={joinLimitRef.current}
                             className='h-9' 
                             onClick={join_api}
                             ref={joinButtonRef}

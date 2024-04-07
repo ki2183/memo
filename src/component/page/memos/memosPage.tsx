@@ -6,82 +6,116 @@ import { useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { changePageMax, changePageNum } from "../../store/slices/page"
 import { computePageMax, getPageInfo, overText } from "./hooks/pagehooks"
+import { useQuery } from "react-query"
+import axios from "axios"
+import { contextType } from "react-modal"
 
 type test_type = {
     date:string,
     title:string,
     text: string[],
-    img: imgstype[],
+    imgs: imgstype[],
 }
 
 export type memo_dto = {
-    date:string,
+    createdAt:string,
     title:string,
     text:string[],
-    img:imgstype[]
+    imgs:imgstype[]
 }
+
+// export type memoList_dto ={
+//     _id:,
+//     createAt
+// }
 
 function MemosPage(){
 
     const {pageNum,pageMax} = useAppSelector(state => state.pageNumber)
     const [jsx_arr,setJsx_Arr] = useState<JSX.Element[]>([])
-    const [dto,setDto] = useState<test_type[]>([])
+    const [dto,setDto] = useState<memo_dto[]>([])
     const dispatch = useAppDispatch()
-    
+    const get_token = localStorage.getItem('token')
+    const token = get_token ? JSON.parse(get_token) : null
+
+
+    const getList = async () => {
+        const response = await axios.post("/memos/MemoList", token, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    }
+    const { data, isLoading, error } = useQuery(['memoList'], getList)
+
+    useEffect(()=>{
+        if(data && data.memos){
+            const memos = data.memos.reverse()
+            setDto(memos)
+        }
+        
+    },[data])
+
     const testDto = [{
         date:"2024-03-22",
         title:"24",
         text:["이어지는 가지마다 수놓았던..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"25",
         text:["이어지는 가지마다 수놓았던..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"26",
         text:["이어지는 가지마다 수놓았던..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"27",
         text:["이어지는 가지마다 수놓았던..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"우리의 밤을 외워요",
         text:["다가온 이별을 알아요 밤 비..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"꿈을 꿨어요",
         text:["멀어진 꿈 되돌아 갈순 없지만..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"나무",
         text:["그대 춤을 추는 나무 같아요..."],
-        img:[],
+        imgs:[],
     },{
         date:"2024-03-22",
         title:"31",
         text:["이어지는 가지마다 수놓았던..."],
-        img:[],
+        imgs:[],
     }]
 
-    const dto_ = testDto.reverse()
+    // const dto_ = data.reverse()
     const postsPerPage = 5
 
     useEffect(()=>{
-        const len = testDto.length
-        const page_max = computePageMax({item_length:len,postsPerPage})
-        dispatch(changePageMax(page_max))
-    },[])
+        if(data && data.memos){
+            const len = data.memos.length
+            const page_max = computePageMax({item_length:len,postsPerPage})
+            dispatch(changePageMax(page_max))
+        }
+        
+    },[data])
 
     useEffect(()=>{
-        const dto_mirror = getPageInfo({memo_dto:testDto,pageNum,postsPerPage})
-        setDto(dto_mirror)
+        if(data && data.memos){
+            const dto_mirror = getPageInfo({memo_dto:data.memos,pageNum,postsPerPage})
+            setDto(dto_mirror)
+        }
     },[pageNum])
 
     useEffect(() => {
@@ -109,16 +143,27 @@ function MemosPage(){
                     <ul className="memos-frame-ul">
                         
                         {
-                            dto.length > 0 && dto.map((item,idx)=>(
+                            (dto && dto.length) > 0 && dto.map((item,idx)=>(
                                 <MemosLI
                                     idx={idx}
-                                    date={item.date}
+                                    date={item.createdAt}
                                     text={item.text}
                                     title={item.title}
                                     key={idx}
                                 />
                             ))
                         }
+                        {/* {
+                            ( data && (data.memos && data.memos.length > 0 )) && data.memos.map((item:any,idx:number)=>(
+                                <MemosLI
+                                    idx={idx}
+                                    date={item.createdAt}
+                                    text={item.text}
+                                    title={item.title}
+                                    key={idx}
+                                />
+                            ))
+                        } */}
 
                     </ul>
                     <div className="frame-memos-paging">
@@ -226,13 +271,18 @@ function MemosLI({
         
     },[pageNum])
 
+    const extract_date = () =>{
+
+        return date.slice(0,10)
+    }
+
     return(
         <li className="memos-frame-li">
             <div ref={bottomBorderRef} className="memo-frame-li-in-mirror" style={{borderBottom:border}}/>
             <div ref={rightBorderRef} className="memo-frame-li-in-mirror" style={{borderRight:border}}/>
             <div className="memo-frame-li-in">
                 <span ref={spanRef1}>{title}</span>
-                <span ref={spanRef2}>{date}</span>
+                <span ref={spanRef2}>{extract_date()}</span>
                 <span ref={spanRef3}>{overText(text[0])}</span>
             </div>
 

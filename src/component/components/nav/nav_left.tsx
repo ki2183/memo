@@ -10,8 +10,11 @@ export function NavRight(){
 
     const theme = useAppSelector(state => state.theme)
     const { nav_menu,nav_total } = useAppSelector(state => state.navState)
+    
     const navigation = useNavigate()
     const dispatch = useDispatch()
+    const token_get = localStorage.getItem('token')
+    const token = token_get ? JSON.parse(token_get): null
 
     const move_url = (url:string) =>{
         navigation(`/${url}`)
@@ -94,9 +97,11 @@ export function NavRight(){
         <div className="container-edit-nav-left" style={{backgroundColor:theme.navColor, borderRight:` 1px solid ${theme.navBorder}`}}>
             <div className="frame-edit-nav-left">
                 <div className="nav-title">
-                       <span>
-                            mem0 
-                        </span>
+                        <div className="frame-nav-title-login">
+                            <span>mem0</span>
+                            
+                        </div>
+                      
                         <span 
                             className="nav-total-handle-button"
                             onClick={onClick_handler_nav_total}
@@ -130,9 +135,22 @@ export function NavRight(){
                 </div>
                 
             </div>
-            <div >
+            <div>
 
             </div>
+            <span
+                onClick={e=>{
+                    e.preventDefault()
+                    if(token){
+                        //token삭제 api만들어야함
+                        localStorage.removeItem('token')
+                        navigation('/login')
+                    }
+                    navigation('/login')
+                }}
+                className="login-button"
+                style={{borderTop:`1px solid ${theme.navBorder}`}}
+            >{token ? "logout":"login"}</span>
         </div>
     )
 }
@@ -305,3 +323,12 @@ function NavRightLi({idx,title,max,onclick_FNC}:NavRightLi_type){
                         </li>
     )
 } 
+
+
+// function NavLoginDiv(){
+//     return (
+//         <div className="absolute w-full h-10 bottom-0 flex flex-row items-center justify-end">
+//             <span className="mr-12">로그인</span>
+//         </div>
+//     )
+// }
