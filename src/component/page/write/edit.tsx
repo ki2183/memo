@@ -12,6 +12,8 @@ import { change_imgs, imgstype } from "../../store/slices/imgs";
 import { changeText_arr } from "../../store/slices/text";
 import gsap from "gsap";
 import { EditorSave } from "./Parts_write/editor_save/editor_save";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 export type img_url_tf_type = {
     tf:boolean,
@@ -46,7 +48,11 @@ function Edit(){
     const prevStackLimitRef = useRef<boolean>(false)
     const ctrl_z_LimitRef = useRef<boolean>(false)
     const [focusCur,setFocusCur] = useState<number>(0)
+    const location = useLocation()
+    const { state } = location
     const dispatch = useAppDispatch()
+    const get_token = localStorage.getItem('token')
+    const token = get_token ? JSON.parse(get_token) : null
 
     const setMemoDTO = () =>{
         const memoDTO = {
@@ -111,8 +117,31 @@ function Edit(){
     useLayoutEffect(()=>{
         const getDto_JSON = localStorage.getItem("memo")
         const getDto = getDto_JSON ? JSON.parse(getDto_JSON) as memoDTO_type : null 
-        console.log(getDto)
-        if(getDto){
+        
+
+        if(state && state.memo_id){
+            const getDto = () =>{
+                const initial_dto = {
+                    user_id:token._id,
+                    token,
+                    memo_id:state.memo_id
+                } 
+                axios.post('memos/viewMemo',JSON.stringify(initial_dto),{
+                    headers:{
+                        "Content-Type":'application/json'
+                    }
+                })
+                    .then(res =>{
+                        const getDto = res.data.memos[0]
+                        setTitle(getDto.title)
+                        dispatch(changeText_arr(getDto.text))
+                        dispatch(change_imgs(getDto.imgs))
+                    })
+                    .catch(err => console.log(err))
+            }
+            getDto()
+        }
+        else if(getDto){
             const {title,imgs,text}= getDto
             
             if(title !== "" && (title !== undefined && title !== null)){

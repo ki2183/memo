@@ -9,6 +9,7 @@ import { computePageMax, getPageInfo, overText } from "./hooks/pagehooks"
 import { useQuery } from "react-query"
 import axios from "axios"
 import { contextType } from "react-modal"
+import { useNavigate } from "react-router-dom"
 
 type test_type = {
     date:string,
@@ -21,114 +22,74 @@ export type memo_dto = {
     createdAt:string,
     title:string,
     text:string[],
-    imgs:imgstype[]
+    imgs:imgstype[],
+    _id:string
 }
-
-// export type memoList_dto ={
-//     _id:,
-//     createAt
-// }
 
 function MemosPage(){
 
     const {pageNum,pageMax} = useAppSelector(state => state.pageNumber)
     const [jsx_arr,setJsx_Arr] = useState<JSX.Element[]>([])
-    const [dto,setDto] = useState<memo_dto[]>([])
     const dispatch = useAppDispatch()
     const get_token = localStorage.getItem('token')
     const token = get_token ? JSON.parse(get_token) : null
-
+    const navigate = useNavigate()
 
     const getList = async () => {
-        const response = await axios.post("/memos/MemoList", token, {
+        const response = await axios.post(`/memos/listPage/${pageNum}`, token, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
+
         return response.data;
     }
-    const { data, isLoading, error } = useQuery(['memoList'], getList)
+    const { data, refetch } = useQuery(['memoList'], getList)
 
     useEffect(()=>{
-        if(data && data.memos){
-            const memos = data.memos.reverse()
-            setDto(memos)
+       
+        const getLength = async () =>{
+            try{
+                axios.post('/memos/getPageLength',get_token,{
+                    headers:{
+                        "Content-Type":'application/json'
+                    }
+                })
+                    .then(res => {
+                        console.log(res.data)
+                        const page_max = computePageMax({item_length:res.data,postsPerPage})
+                        dispatch(changePageMax(page_max))
+
+                    })
+                    .catch(err=>{
+                        // navigate('/main')
+                        console.log(err)
+                    })
+                    
+            }catch(err){
+                console.log(err)
+                // navigate('/main')
+            }
         }
+        if(!token) navigate("/login")
+        getLength()
         
-    },[data])
+    },[])
 
-    const testDto = [{
-        date:"2024-03-22",
-        title:"24",
-        text:["이어지는 가지마다 수놓았던..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"25",
-        text:["이어지는 가지마다 수놓았던..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"26",
-        text:["이어지는 가지마다 수놓았던..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"27",
-        text:["이어지는 가지마다 수놓았던..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"우리의 밤을 외워요",
-        text:["다가온 이별을 알아요 밤 비..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"꿈을 꿨어요",
-        text:["멀어진 꿈 되돌아 갈순 없지만..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"나무",
-        text:["그대 춤을 추는 나무 같아요..."],
-        imgs:[],
-    },{
-        date:"2024-03-22",
-        title:"31",
-        text:["이어지는 가지마다 수놓았던..."],
-        imgs:[],
-    }]
-
-    // const dto_ = data.reverse()
     const postsPerPage = 5
 
     useEffect(()=>{
-        if(data && data.memos){
-            const len = data.memos.length
-            const page_max = computePageMax({item_length:len,postsPerPage})
-            dispatch(changePageMax(page_max))
-        }
-        
-    },[data])
-
-    useEffect(()=>{
-        if(data && data.memos){
-            const dto_mirror = getPageInfo({memo_dto:data.memos,pageNum,postsPerPage})
-            setDto(dto_mirror)
-        }
+        refetch()
+        console.log(data)
     },[pageNum])
 
     useEffect(() => {
         const jsxArr_: JSX.Element[] = [];
         for (let i = 0; i < pageMax; i++) {
-          jsxArr_.push(<PageNumber idx={i}/>);
+          jsxArr_.push(<PageNumber idx={i} key={i}/>);
         }
         setJsx_Arr(jsxArr_);
       }, [pageMax]);
-
-    useEffect(()=>{
-        console.log(dto)
-    },[dto])
 
     return (
         <Page>
@@ -143,27 +104,17 @@ function MemosPage(){
                     <ul className="memos-frame-ul">
                         
                         {
-                            (dto && dto.length) > 0 && dto.map((item,idx)=>(
+                            (data && data.length > 0) && data.map((item:memo_dto,idx:number)=>(
                                 <MemosLI
                                     idx={idx}
                                     date={item.createdAt}
                                     text={item.text}
                                     title={item.title}
                                     key={idx}
+                                    _id={item._id}
                                 />
                             ))
                         }
-                        {/* {
-                            ( data && (data.memos && data.memos.length > 0 )) && data.memos.map((item:any,idx:number)=>(
-                                <MemosLI
-                                    idx={idx}
-                                    date={item.createdAt}
-                                    text={item.text}
-                                    title={item.title}
-                                    key={idx}
-                                />
-                            ))
-                        } */}
 
                     </ul>
                     <div className="frame-memos-paging">
@@ -190,10 +141,11 @@ const PageNumber = ({idx}:PageNumber_type) =>{
         e.preventDefault()
         dispatch(changePageNum(idx))
     }
+    const { pageNum } = useAppSelector(state => state.pageNumber)
     return (
         <span 
             onClick={onclick_handler}
-            className="select-none cursor-pointer"
+            className={`select-none cursor-pointer ${pageNum === idx ? "font-bold":""}`}
         >
             {idx + 1}
         </span>
@@ -206,10 +158,12 @@ type MemosLI_type = {
     date:string,
     title:string,
     text: string[],
-    idx:number
+    idx:number,
+    _id:string
 }
 
 function MemosLI({
+    _id,
     idx,
     text,
     date,
@@ -223,6 +177,7 @@ function MemosLI({
     const spanRef1 = useRef<HTMLSpanElement>(null)
     const spanRef2 = useRef<HTMLSpanElement>(null)
     const spanRef3 = useRef<HTMLSpanElement>(null)
+    const navigate = useNavigate()
 
     let border = theme === 'dark' ? `1px solid ${li_BorderColor}` : `2px solid ${li_BorderColor}`
     
@@ -271,9 +226,17 @@ function MemosLI({
         
     },[pageNum])
 
-    const extract_date = () =>{
+    const extract_date = () =>{return date.slice(0,10)}
 
-        return date.slice(0,10)
+    const onClick_title = (e:React.MouseEvent<HTMLSpanElement>) =>{
+        e.preventDefault()
+        navigate("/memo", { state: { memo_id: _id } });
+    }
+    
+    const title_skip = (title:string)=>{
+        if(title.length < 17) return title
+        const title_ = title.slice(0,17) + "..."
+        return title_
     }
 
     return(
@@ -281,7 +244,7 @@ function MemosLI({
             <div ref={bottomBorderRef} className="memo-frame-li-in-mirror" style={{borderBottom:border}}/>
             <div ref={rightBorderRef} className="memo-frame-li-in-mirror" style={{borderRight:border}}/>
             <div className="memo-frame-li-in">
-                <span ref={spanRef1}>{title}</span>
+                <span ref={spanRef1} className="cursor-pointer" onClick={onClick_title}>{title_skip(title)}</span>
                 <span ref={spanRef2}>{extract_date()}</span>
                 <span ref={spanRef3}>{overText(text[0])}</span>
             </div>

@@ -37,7 +37,7 @@ function App(){
           <Route path='/main' element={<MainPage/>}/>
           <Route path='/memos' element={<MemosPage/>}/> 
           <Route path='/write' element={<WritePage/>}/>
-          <Route path='/viewMemo' element={<MemosPage/>}/>
+          <Route path='/memo' element={<WritePage/>}/>
           <Route path='/about' element={<MainPage/>}/>
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/join' element={<JoinPage/>}/>
