@@ -58,6 +58,7 @@ function LoginPage(){
     }
 
     useEffect(()=>{
+        localStorage.removeItem('token')
         bordersRef.current.forEach(item=>{
             if(item !== null)
                 blur_border_animation(item)

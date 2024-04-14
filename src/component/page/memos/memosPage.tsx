@@ -8,7 +8,6 @@ import { changePageMax, changePageNum } from "../../store/slices/page"
 import { computePageMax, getPageInfo, overText } from "./hooks/pagehooks"
 import { useQuery } from "react-query"
 import axios from "axios"
-import { contextType } from "react-modal"
 import { useNavigate } from "react-router-dom"
 
 type test_type = {
@@ -26,6 +25,10 @@ export type memo_dto = {
     _id:string
 }
 
+export type memo_res = {
+    data:memo_dto
+}
+
 function MemosPage(){
 
     const {pageNum,pageMax} = useAppSelector(state => state.pageNumber)
@@ -36,17 +39,37 @@ function MemosPage(){
     const navigate = useNavigate()
 
     const getList = async () => {
-        const response = await axios.post(`/memos/listPage/${pageNum}`, token, {
+        const dto = {_id:token._id}
+        const response = await axios.post(`/memos/listPaging/${pageNum}`, dto, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-
         return response.data;
     }
-    const { data, refetch } = useQuery(['memoList'], getList)
+
+
+    const { data, refetch,isLoading } = useQuery(['memoList'], getList)
+
+    const go_login = () =>{
+        navigate('/login')    
+    }
 
     useEffect(()=>{
+
+        const checkToken = async () => {
+            try {
+                const res = await axios.post('/memos/checkId', get_token, {
+                    headers: {
+                        "Content-Type": 'application/json'
+                    }
+                })
+                const tf = res.data; 
+                if (!tf) go_login()
+            } catch (err) {
+                go_login()
+            }
+        }
        
         const getLength = async () =>{
             try{
@@ -56,23 +79,22 @@ function MemosPage(){
                     }
                 })
                     .then(res => {
-                        console.log(res.data)
+                        // console.log(res.data)
                         const page_max = computePageMax({item_length:res.data,postsPerPage})
                         dispatch(changePageMax(page_max))
-
                     })
                     .catch(err=>{
-                        // navigate('/main')
-                        console.log(err)
+                        // console.log(err)
                     })
                     
             }catch(err){
-                console.log(err)
-                // navigate('/main')
+                // console.log(err)
             }
         }
         if(!token) navigate("/login")
+        checkToken()
         getLength()
+        
         
     },[])
 
@@ -80,7 +102,8 @@ function MemosPage(){
 
     useEffect(()=>{
         refetch()
-        console.log(data)
+        console.log(pageNum)
+        console.log(isLoading)
     },[pageNum])
 
     useEffect(() => {
@@ -89,7 +112,9 @@ function MemosPage(){
           jsxArr_.push(<PageNumber idx={i} key={i}/>);
         }
         setJsx_Arr(jsxArr_);
-      }, [pageMax]);
+      }, [pageMax])
+
+    useEffect(()=>{console.log(isLoading)},[isLoading])
 
     return (
         <Page>
@@ -102,7 +127,7 @@ function MemosPage(){
                         </span>
                     </div>
                     <ul className="memos-frame-ul">
-                        
+                        {isLoading && <div>로딩중</div>}
                         {
                             (data && data.length > 0) && data.map((item:memo_dto,idx:number)=>(
                                 <MemosLI
@@ -112,10 +137,10 @@ function MemosPage(){
                                     title={item.title}
                                     key={idx}
                                     _id={item._id}
+                                    data={data}
                                 />
                             ))
                         }
-
                     </ul>
                     <div className="frame-memos-paging">
                         <ul>
@@ -159,7 +184,8 @@ type MemosLI_type = {
     title:string,
     text: string[],
     idx:number,
-    _id:string
+    _id:string,
+    data: memo_dto | any | null
 }
 
 function MemosLI({
@@ -167,6 +193,7 @@ function MemosLI({
     idx,
     text,
     date,
+    data,
     title,
 }:MemosLI_type){
 
@@ -224,7 +251,7 @@ function MemosLI({
             x:0
         },0 + 0.2*idx)
         
-    },[pageNum])
+    },[data])
 
     const extract_date = () =>{return date.slice(0,10)}
 

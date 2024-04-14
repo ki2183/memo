@@ -3,7 +3,7 @@ import { RootState } from './../store';
 import { createSlice } from '@reduxjs/toolkit'
 
 
-const initialState: themeType = lightTheme
+const initialState: themeType = darkTheme
 
 export const themeSlice = createSlice({
   name: 'theme',

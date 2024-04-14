@@ -61,7 +61,8 @@ function Edit(){
             imgs:imgs
         }
         const memoDTO_JSON = JSON.stringify(memoDTO)
-        localStorage.setItem("memo", memoDTO_JSON)
+        const memo_id = state && state.memo_id ? state.memo_id : null
+        token && (token.token && memo_id) ? updateMemo(memo_id) : localStorage.setItem("memo", memoDTO_JSON)
         setAutoSaveAni(!autoSaveAni)
     }
 
@@ -82,11 +83,11 @@ function Edit(){
     useEffect(()=>{
         const timer = setTimeout(()=>{
             setMemoDTO()
-        },2 * 60 * 1000) 
+        },2 * 10 * 1000) 
         return ()=>{
             clearTimeout(timer)
         }
-    },[setMemoDTO]) //임시저장
+    },[setMemoDTO]) //임시저장 자동저장
 
     useEffect(()=>{
         const dto = {   
@@ -123,9 +124,10 @@ function Edit(){
             const getDto = () =>{
                 const initial_dto = {
                     user_id:token._id,
-                    token,
+                    token:token.token,
                     memo_id:state.memo_id
                 } 
+                console.log(initial_dto)
                 axios.post('memos/viewMemo',JSON.stringify(initial_dto),{
                     headers:{
                         "Content-Type":'application/json'
@@ -133,6 +135,7 @@ function Edit(){
                 })
                     .then(res =>{
                         const getDto = res.data.memos[0]
+                        console.log(getDto)
                         setTitle(getDto.title)
                         dispatch(changeText_arr(getDto.text))
                         dispatch(change_imgs(getDto.imgs))
@@ -143,6 +146,8 @@ function Edit(){
         }
         else if(getDto){
             const {title,imgs,text}= getDto
+
+            console.log(title)
             
             if(title !== "" && (title !== undefined && title !== null)){
                 setTitle(title)
@@ -196,10 +201,35 @@ function Edit(){
         }
     }
 
+    const updateMemo =  (memo_id:string) =>{
+        console.log('저장이에요')
+        if(!state.memo_id) return
+
+        const dto = {
+            user_id:token._id,
+            memo_id:memo_id,
+            token:token.token,
+            memo:{
+                title,
+                text: text,
+                imgs: imgs,
+            }
+        }
+
+        axios.post('/memos/updateMemo',dto,{
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+        .then(res => console.log('저동저장'))
+        .catch(err => console.log(err))
+    
+    }
+
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="container-edit">
-                <AutoSave autoSaveAni={autoSaveAni}/>
+                <AutoSave title={title} autoSaveAni={autoSaveAni}/>
                 <NavTop/>
                 <div className="frame-edit">
                     <OptionModal 
@@ -260,15 +290,18 @@ export default Edit
 // autoSaveSwitch,setAutoSaveSwitch
 
 export type AutoSave_type ={
-    autoSaveAni:boolean
+    autoSaveAni:boolean,
+    title:string
 }
 
 function AutoSave({
-    autoSaveAni
+    autoSaveAni,
+    title
     // ,setAutoSaveAni
 }:AutoSave_type){
     const [limit,setLimit] = useState<boolean>(false)
     const theme = useAppSelector(state => state.theme)
+
 
     useEffect(()=>{
         if(limit===false){
@@ -301,11 +334,15 @@ function AutoSave({
         
     },[autoSaveAni])
 
+    const get_token = localStorage.getItem('token')
+    const token = get_token ? JSON.parse(get_token) : null
+    
+
     return (
         <div className="container-auto-save" style={{
             color:theme.textColor
         }}>
-            <div>임시저장완료</div>
+            <div>{token && token.token ? "임시저장":"자동저장"}</div>
             <div 
                 className="auto-save-bar"
                 style={{

@@ -21,6 +21,7 @@ export function EditorSave({title}:EditorSave_type){
     const imgArr = useAppSelector(state => state.imgs)
 
     const save_new_memo = () => {
+        if(!token) {alert('로그인하세요!'); return}
         const dto = {
             token:token.token,
             user_id : token._id,
@@ -65,11 +66,9 @@ export function EditorSave({title}:EditorSave_type){
     }
 
     return (
-        <div style={{
-            position:"fixed",
+        <div className="fixed cursor-pointer flex gap-2" style={{
             top:"95%",
-            left:"95%",
-            cursor:"pointer"
+            right:"5%",
         }}
         onClick={(e)=>{
             e.preventDefault()
@@ -81,7 +80,12 @@ export function EditorSave({title}:EditorSave_type){
             localStorage.removeItem('memo')
         }}
         >
-            저장
+            <div>
+                삭제    
+            </div>
+            <div>
+                저장
+            </div>
         </div>
     )
 }

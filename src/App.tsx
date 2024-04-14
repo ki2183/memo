@@ -22,8 +22,7 @@ function App(){
   useEffect(()=>{
     const theme_local = localStorage.getItem('theme')
     const theme_ = theme_local ? JSON.parse(theme_local) as themeType : null 
-    
-    if((theme_ !== null && theme_.theme) && theme_.theme === "dark"){
+    if((theme_ !== null && theme_.theme) && theme_.theme === "light"){
       dispatch(changeTheme())  
     }
   },[])
