@@ -59,7 +59,7 @@ function MemosPage(){
 
         const checkToken = async () => {
             try {
-                const res = await axios.post('/memos/checkId', get_token, {
+                const res = await axios.post('/memos/checkToken', get_token, {
                     headers: {
                         "Content-Type": 'application/json'
                     }
@@ -102,8 +102,6 @@ function MemosPage(){
 
     useEffect(()=>{
         refetch()
-        console.log(pageNum)
-        console.log(isLoading)
     },[pageNum])
 
     useEffect(() => {
@@ -113,8 +111,6 @@ function MemosPage(){
         }
         setJsx_Arr(jsxArr_);
       }, [pageMax])
-
-    useEffect(()=>{console.log(isLoading)},[isLoading])
 
     return (
         <Page>

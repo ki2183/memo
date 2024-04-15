@@ -46,13 +46,13 @@ export const textSlice = createSlice({
             const {curIdx,curText,nextText} = action.payload
             const textarr = [curText,nextText]
             state.splice(curIdx,1,...textarr)
+        },
+        resetText:(state)=>{
+            return [""]
         }
-        // ,lineBreakText_lastIdx:(state,action:PayloadAction<lineBreak_type>)=>{
-
-        // }
     }
 })
 
-export const { addText,writeText,delText,addText_between,changeText_arr,lineBreakText} = textSlice.actions
+export const { addText,writeText,delText,addText_between,changeText_arr,lineBreakText,resetText} = textSlice.actions
 export const selectTheme = (state: RootState) => state.text
 export default textSlice.reducer

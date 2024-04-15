@@ -91,6 +91,9 @@ export const imgsSlice = createSlice({
             })
         },change_imgs:(state,action:PayloadAction<imgstype[]>)=>{
             return action.payload
+        },
+        reset_imgs:(state)=>{
+            return []
         }
     }
 })
@@ -105,7 +108,8 @@ export const {
         dnd_img_to_img,
         dnd_img_to_text,
         del_text_movement,
-        add_text_moveMent
+        add_text_moveMent,
+        reset_imgs
     } = imgsSlice.actions
 export const selectTheme = (state: RootState) => state.imgs
 export default imgsSlice.reducer

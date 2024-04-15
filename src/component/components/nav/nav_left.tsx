@@ -5,6 +5,8 @@ import { useAppSelector } from "../../store/hooks"
 import { useDispatch } from "react-redux"
 import { change_nav_menu, change_nav_total } from "../../store/slices/navState"
 import { useLocation, useNavigate } from "react-router-dom"
+import { resetText } from "../../store/slices/text"
+import { reset_imgs } from "../../store/slices/imgs"
 
 export function NavRight(){
 
@@ -29,7 +31,11 @@ export function NavRight(){
             onclick_FNC:()=>{move_url("memos")}
         },{
             title:"write",
-            onclick_FNC:()=>{move_url("write")}
+            onclick_FNC:()=>{
+                dispatch(resetText())
+                dispatch(reset_imgs())
+                move_url("write")
+            }
         }
     ]
 

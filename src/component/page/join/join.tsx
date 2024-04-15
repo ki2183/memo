@@ -44,16 +44,17 @@ function JoinPage(){
     }
 
     const checkId_api = () => {
-        if(formDto.user_id === ''){
-            return 
-        }
+        
+        if(formDto.user_id === '') return 
+        const checkString = id_char_check(formDto.user_id)
+        if(!checkString) return
         axios.post('/memos/checkId',{userId:formDto.user_id})
             .then(res => {
                 const tf = res.data
                 setId_check(tf)
                 if(!tf && warningRefs) warning_animation_span(errSpanRefs,0)
                 tf ? inputRefs.current[1]?.focus() :inputRefs.current[0]?.focus()
-                console.log(inputRefs.current)
+                // console.log(inputRefs.current)
             }).catch(err => console.log(err))
         }
 
@@ -93,14 +94,9 @@ function JoinPage(){
     }
 
     useEffect(()=>{
-        console.log(formDto)
         if(limitRef.current === true)
             setEssential_condition(fail_check(formDto,id_check))
     },[formDto])
-
-    useEffect(()=>{
-        console.log(errSpanRefs.current)
-    },[])
 
     return(
         <Page>

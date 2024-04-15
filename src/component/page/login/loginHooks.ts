@@ -33,7 +33,7 @@ export function LoginHooks(){
         e.preventDefault()
         try{
             const res = await axios.post('/memos/login',inputDto) as any
-            if(!res.data || !res.data.token) { alert("일치하는 정보가 없습니다."); return null}
+            if(!res.data || !res.data.token) {return null}
             localStorage.setItem('token',JSON.stringify(res.data))
             console.log(localStorage.getItem('token'))
             navigate('/main')

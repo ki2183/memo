@@ -32,14 +32,11 @@ function LoginPage(){
     const frameRef = useRef<HTMLDivElement>(null)
     const bordersRef = useRef<Array<HTMLDivElement|null>>([])
     const {li_BorderColor} = useAppSelector(state => state.theme)
+    const [fstLoginFail,setFstLoginFail] = useState<boolean>(false)
 
     const borderStyle = {
         borderBottom:`1px solid ${li_BorderColor}`
     }
-
-    useEffect(()=>{
-        console.log(inputDto)
-    },[inputDto])
 
     const submit_handler = async (e:React.MouseEvent<HTMLButtonElement>) =>{
         const null_check = check_inputDto_null({e,inputDto})
@@ -48,6 +45,7 @@ function LoginPage(){
             focus_handler(null_check === "userId" ? idRef : passwordRef)
             setWarning_text(null_check)
             nullCheck = null_check
+            setFstLoginFail(true)
         }else{
             await login_handler({e,inputDto,navigate})       
             setWarning_text('login_fail')
@@ -58,16 +56,14 @@ function LoginPage(){
     }
 
     useEffect(()=>{
-        localStorage.removeItem('token')
+        localStorage.clear()
+        console.log(localStorage.getItem('memo'))
         bordersRef.current.forEach(item=>{
             if(item !== null)
                 blur_border_animation(item)
         })
     },[])
 
-    useEffect(()=>{
-        console.log(warning_text)
-    },[])
 
     const key_handler = (e:React.KeyboardEvent<HTMLInputElement>,type:"userId"|"password") => {
         if(e.key === "Enter"){
@@ -82,7 +78,7 @@ function LoginPage(){
         <Page>
             <div className="w-full h-full flex justify-center items-center ">
                 <div ref={frameRef} className='h-auto w-80'>
-                    <form className='h-auto w-auto flex flex-col items-center gap-2'>
+                    <form className='h-auto w-auto flex flex-col items-center gap-1'>
                     <   div className='w-full'>
                             <input  
                                 type="text" 
@@ -134,6 +130,18 @@ function LoginPage(){
                                 onChange={e=>onChange_handler_loginInfo({e,info_type:"password",setInputDto})}  
                             />
                             <div ref={el => bordersRef.current[1] = el} className='login-input-border2' style={borderStyle}/>
+                        </div>
+                        <div className='w-full'>
+                            <span className='text-xs text-red-500'>
+                                { 
+                                    !fstLoginFail ? null : (
+                                        (inputDto.userId === "" && inputDto.password === "" ) ? "정보를 입력하세요." : 
+                                            (inputDto.userId === "" ? "아이디를 입력하세요." : 
+                                                (inputDto.password === "" ? "비밀번호를 입력하세요." : null)
+                                            )
+                                    )
+                                }
+                            </span>
                         </div>
                         
                         <button 

@@ -53,7 +53,6 @@ export function formHooks(){
         errSpanRefs:React.MutableRefObject<(HTMLSpanElement | null)[]>,
         idx:number
     ) =>{
-        console.log(errSpanRefs.current)
         const tl = gsap.timeline()
         tl.set(errSpanRefs.current[idx],{
             x:0

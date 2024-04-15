@@ -8,8 +8,8 @@ import { NavTop } from "../../components/nav/nav_top";
 import { title_hooks_keyDown, title_hooks_onChange } from "./Hooks_write/titlehooks";
 import EditorField from "./Parts_write/editor_field/editor_field";
 import { adjustTextAreaHeight } from "./Hooks_write/etcFCN";
-import { change_imgs, imgstype } from "../../store/slices/imgs";
-import { changeText_arr } from "../../store/slices/text";
+import { change_imgs, imgstype, reset_imgs } from "../../store/slices/imgs";
+import { changeText_arr, resetText } from "../../store/slices/text";
 import gsap from "gsap";
 import { EditorSave } from "./Parts_write/editor_save/editor_save";
 import { useLocation } from "react-router-dom";
@@ -62,7 +62,14 @@ function Edit(){
         }
         const memoDTO_JSON = JSON.stringify(memoDTO)
         const memo_id = state && state.memo_id ? state.memo_id : null
-        token && (token.token && memo_id) ? updateMemo(memo_id) : localStorage.setItem("memo", memoDTO_JSON)
+        if(location.pathname === "/memo"){
+            updateMemo(memo_id)
+            console.log('memo')
+        }else{
+            console.log(memoDTO_JSON)
+            localStorage.setItem("memo", memoDTO_JSON)
+            console.log(localStorage.getItem('memo'))
+        }
         setAutoSaveAni(!autoSaveAni)
     }
 
@@ -115,10 +122,12 @@ function Edit(){
         }
     },[text,imgs]) //ctrl + z 할 스택들
 
-    useLayoutEffect(()=>{
+    useEffect(()=>{
         const getDto_JSON = localStorage.getItem("memo")
         const getDto = getDto_JSON ? JSON.parse(getDto_JSON) as memoDTO_type : null 
-        
+        console.log(getDto)
+
+        console.log(localStorage.getItem('memo'))
 
         if(state && state.memo_id){
             const getDto = () =>{
@@ -144,21 +153,39 @@ function Edit(){
             }
             getDto()
         }
-        else if(getDto){
-            const {title,imgs,text}= getDto
-
-            console.log(title)
-            
-            if(title !== "" && (title !== undefined && title !== null)){
-                setTitle(title)
-            }
-            if(text.length > 0){
-                dispatch(changeText_arr(text))
-            }if(imgs.length > 0){
-                dispatch(change_imgs(imgs))
-            }
-        }
+        // else if(location.pathname === "/write" && getDto !== null){
+        //     const setDto = async() => {
+        //         if(getDto.title){
+        //             setTitle(getDto.title)
+        //         }
+        //         if(text.length > 0){
+        //             dispatch(changeText_arr(getDto.text))
+        //         }if(imgs.length > 0){
+        //             dispatch(change_imgs(getDto.imgs))
+        //         }
+        //     }
+        //     setDto()
+        // }
     },[])
+
+    useEffect(()=>{
+        const getDto_JSON = localStorage.getItem("memo")
+        const getDto = getDto_JSON ? JSON.parse(getDto_JSON) as memoDTO_type : null 
+
+        if(location.pathname === "/write" && getDto !== null){
+            const setDto = async() => {
+                if(getDto.title){
+                    setTitle(getDto.title)
+                }
+                if(text.length > 0){
+                    dispatch(changeText_arr(getDto.text))
+                }if(imgs.length > 0){
+                    dispatch(change_imgs(getDto.imgs))
+                }
+            }
+            setDto()
+        }
+    },[location])
 
     /* OpenClose FCN */
     //#region
@@ -202,7 +229,7 @@ function Edit(){
     }
 
     const updateMemo =  (memo_id:string) =>{
-        console.log('저장이에요')
+        
         if(!state.memo_id) return
 
         const dto = {
@@ -307,7 +334,6 @@ function AutoSave({
         if(limit===false){
             setLimit(true)
         }else{
-            console.log('asd')
             const tl = gsap.timeline()
             tl.set('.container-auto-save',{
                 opacity:0,
