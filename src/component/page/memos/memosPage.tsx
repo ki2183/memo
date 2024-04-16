@@ -37,6 +37,7 @@ function MemosPage(){
     const get_token = localStorage.getItem('token')
     const token = get_token ? JSON.parse(get_token) : null
     const navigate = useNavigate()
+    const [delay,setDelay] = useState<boolean>(false)
 
     const getList = async () => {
         const dto = {_id:token._id}
@@ -49,14 +50,14 @@ function MemosPage(){
     }
 
 
-    const { data, refetch,isLoading } = useQuery(['memoList'], getList)
+    const { data, refetch ,isLoading } = useQuery(['memoList'], getList)
 
     const go_login = () =>{
         navigate('/login')    
     }
 
     useEffect(()=>{
-
+        console.log(get_token)
         const checkToken = async () => {
             try {
                 const res = await axios.post('/memos/checkToken', get_token, {
@@ -65,6 +66,7 @@ function MemosPage(){
                     }
                 })
                 const tf = res.data; 
+                console.log(tf)
                 if (!tf) go_login()
             } catch (err) {
                 go_login()
@@ -95,6 +97,9 @@ function MemosPage(){
         checkToken()
         getLength()
         
+        setTimeout(()=>{
+            setDelay(true)
+        },1500)
         
     },[])
 
@@ -123,9 +128,9 @@ function MemosPage(){
                         </span>
                     </div>
                     <ul className="memos-frame-ul">
-                        {isLoading && <div>로딩중</div>}
+                        {(!delay || isLoading) && <div>로딩중</div>}
                         {
-                            (data && data.length > 0) && data.map((item:memo_dto,idx:number)=>(
+                            (delay === true &&(data && data.length > 0)) && data.map((item:memo_dto,idx:number)=>(
                                 <MemosLI
                                     idx={idx}
                                     date={item.createdAt}

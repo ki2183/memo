@@ -153,19 +153,11 @@ function Edit(){
             }
             getDto()
         }
-        // else if(location.pathname === "/write" && getDto !== null){
-        //     const setDto = async() => {
-        //         if(getDto.title){
-        //             setTitle(getDto.title)
-        //         }
-        //         if(text.length > 0){
-        //             dispatch(changeText_arr(getDto.text))
-        //         }if(imgs.length > 0){
-        //             dispatch(change_imgs(getDto.imgs))
-        //         }
-        //     }
-        //     setDto()
-        // }
+        
+        setTimeout(()=>{
+            
+        },1000)
+
     },[])
 
     useEffect(()=>{
