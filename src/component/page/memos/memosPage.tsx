@@ -45,7 +45,7 @@ function MemosPage(){
             headers: {
                 'Content-Type': 'application/json'
             }
-        });
+        })
         return response.data;
     }
 
@@ -99,7 +99,7 @@ function MemosPage(){
         
         setTimeout(()=>{
             setDelay(true)
-        },1500)
+        },1000)
         
     },[])
 
