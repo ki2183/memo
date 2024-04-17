@@ -12,13 +12,18 @@ import { change_imgs, imgstype, reset_imgs } from "../../store/slices/imgs";
 import { changeText_arr, resetText } from "../../store/slices/text";
 import gsap from "gsap";
 import { EditorSave } from "./Parts_write/editor_save/editor_save";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { EditInitialSettingHooks } from "./Hooks_write/editInitialSettingHooks";
 
 export type img_url_tf_type = {
     tf:boolean,
     idx:number
+}
+
+type memoDTO_type = {
+    title:string
+    text:string[]
+    imgs:imgstype[]
 }
 
 type prevStack_type = {
@@ -44,12 +49,10 @@ function Edit(){
     const ctrl_z_LimitRef = useRef<boolean>(false)
     const [focusCur,setFocusCur] = useState<number>(0)
     const location = useLocation()
-    const navigate = useNavigate()
-    const { state,pathname } = location
+    const { state } = location
     const dispatch = useAppDispatch()
     const get_token = localStorage.getItem('token')
     const token = get_token ? JSON.parse(get_token) : null
-    const {reset_dto,initial_setting,checkToken} = EditInitialSettingHooks()
 
     const setMemoDTO = () =>{
         const memoDTO = {
@@ -61,21 +64,10 @@ function Edit(){
         const memo_id = state && state.memo_id ? state.memo_id : null
         if(location.pathname === "/memo"){
             updateMemo(memo_id)
-            console.log('memo')
         }else{
-            console.log(memoDTO_JSON)
             localStorage.setItem("memo", memoDTO_JSON)
-            console.log(localStorage.getItem('memo'))
         }
         setAutoSaveAni(!autoSaveAni)
-    }
-
-    const resetTitle = () =>{
-        setTitle("")
-    }
-
-    const goLogin = ()=>{
-        navigate('/login')
     }
 
     useEffect(()=>{
@@ -128,18 +120,57 @@ function Edit(){
     },[text,imgs]) //ctrl + z 할 스택들
 
     useEffect(()=>{
-        const start_FNC = async () =>{
-            checkToken(goLogin)
-            reset_dto(resetTitle)
-            await initial_setting({
-                setTitle,
-                goLogin,
-                pathname,
-                state,
-            })
+        const getDto_JSON = localStorage.getItem("memo")
+        const getDto = getDto_JSON ? JSON.parse(getDto_JSON) as memoDTO_type : null 
+
+
+        if(state && state.memo_id){
+            const getDto = () =>{
+                const initial_dto = {
+                    user_id:token._id,
+                    token:token.token,
+                    memo_id:state.memo_id
+                } 
+                axios.post('memos/viewMemo',JSON.stringify(initial_dto),{
+                    headers:{
+                        "Content-Type":'application/json'
+                    }
+                })
+                    .then(res =>{
+                        const getDto = res.data.memos[0]
+                        setTitle(getDto.title)
+                        dispatch(changeText_arr(getDto.text))
+                        dispatch(change_imgs(getDto.imgs))
+                    })
+                    .catch(err => console.log(err))
+            }
+            getDto()
         }
-        start_FNC()
-    },[state])
+        
+        setTimeout(()=>{
+            
+        },1000)
+
+    },[])
+
+    useEffect(()=>{
+        const getDto_JSON = localStorage.getItem("memo")
+        const getDto = getDto_JSON ? JSON.parse(getDto_JSON) as memoDTO_type : null 
+
+        if(location.pathname === "/write" && getDto !== null){
+            const setDto = async() => {
+                if(getDto.title){
+                    setTitle(getDto.title)
+                }
+                if(text.length > 0){
+                    dispatch(changeText_arr(getDto.text))
+                }if(imgs.length > 0){
+                    dispatch(change_imgs(getDto.imgs))
+                }
+            }
+            setDto()
+        }
+    },[location])
 
     /* OpenClose FCN */
     //#region

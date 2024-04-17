@@ -35,7 +35,6 @@ export function LoginHooks(){
             const res = await axios.post('/memos/login',inputDto) as any
             if(!res.data || !res.data.token) {return null}
             localStorage.setItem('token',JSON.stringify(res.data))
-            console.log(localStorage.getItem('token'))
             navigate('/main')
         }catch{
             console.log("server_api_err")

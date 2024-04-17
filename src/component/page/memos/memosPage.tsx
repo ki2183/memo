@@ -45,7 +45,7 @@ function MemosPage(){
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
+        });
         return response.data;
     }
 
@@ -57,7 +57,6 @@ function MemosPage(){
     }
 
     useEffect(()=>{
-        console.log(get_token)
         const checkToken = async () => {
             try {
                 const res = await axios.post('/memos/checkToken', get_token, {
@@ -66,7 +65,6 @@ function MemosPage(){
                     }
                 })
                 const tf = res.data; 
-                console.log(tf)
                 if (!tf) go_login()
             } catch (err) {
                 go_login()
@@ -99,7 +97,7 @@ function MemosPage(){
         
         setTimeout(()=>{
             setDelay(true)
-        },1000)
+        },1500)
         
     },[])
 
