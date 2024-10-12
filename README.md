@@ -29,7 +29,7 @@
 
 로그인 후 개인 계정에 메모를 저장하고 관리할 수 있습니다.
 
-![로그인](https://drive.google.com/file/d/1T2zAzUlDTUSBHRgEx-6IB7shUOu5K6hW/view?usp=sharing)
+![로그](https://drive.google.com/uc?export=view&id=1y_5Mms3HJAl8yvDIa6soRLxugH71uQ-Z)
 
 ### **텍스트 에디터**
 
