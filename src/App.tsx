@@ -1,35 +1,40 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import MainPage from './component/page/main/mainPage';
-import { GlobalStyle } from './style/GlobalStyle';
-import { useAppDispatch, useAppSelector } from './component/store/hooks';
-import WritePage from './component/page/write/writePage';
 import { useEffect } from 'react';
-import { themeType } from './style/theme';
-import { changeTheme } from './component/store/slices/theme';
-import MemosPage from './component/page/memos/memosPage';
-import LoginPage from './component/page/login/login';
-import JoinPage from './component/page/join/join';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import JoinPage from './page/join/join'; 
+import LoginPage from './page/login/login';
+import MainPage from './page/main/mainPage';
+import WritePage from './page/write/writePage';
+import MemosPage from './page/memos/memosPage'; 
+import { changeTheme } from './store/slices/theme';
+import WritePageVer2 from './page/writeVer2/writePage';
 
-const queryClient = new QueryClient()
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { Route, Routes } from 'react-router-dom';
+import { GlobalStyle } from './style/GlobalStyle';
 
-function App(){
+const App = ()=> {
 
   const theme = useAppSelector(state => state.theme)
   const dispatch = useAppDispatch()
 
   useEffect(()=>{
+
+
     const theme_local = localStorage.getItem('theme')
-    const theme_ = theme_local ? JSON.parse(theme_local) as themeType : null 
-    if((theme_ !== null && theme_.theme) && theme_.theme === "light"){
-      dispatch(changeTheme())  
+
+    if (theme_local === "light") dispatch(changeTheme())
+
+    else if (theme_local !== "dark" && theme_local) {
+      const theme_= JSON.parse(theme_local)
+
+      if (theme_.theme !== null && theme_.theme === "light") dispatch(changeTheme())
     }
+
+
   },[])
 
   return (
     <>
-      <QueryClientProvider client={queryClient}>
         <GlobalStyle theme={theme}/>
         <Routes>
           <Route path='/' element={<MainPage/>}/>
@@ -37,11 +42,10 @@ function App(){
           <Route path='/memos' element={<MemosPage/>}/> 
           <Route path='/write' element={<WritePage/>}/>
           <Route path='/memo' element={<WritePage/>}/>
-          <Route path='/about' element={<MainPage/>}/>
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/join' element={<JoinPage/>}/>
+          <Route path='/write2' element={<WritePageVer2/>}/>
         </Routes>
-      </QueryClientProvider>
     </>
     
   )

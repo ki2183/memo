@@ -1,5 +1,5 @@
 export const lightTheme = {
-    bgColor: "#f9f9f9",
+     bgColor: "#f9f9f9",
     textColor: "#333333",
     borderColor: "#ede7f7",
     toggleColor: "#cbb5dc",
@@ -9,7 +9,14 @@ export const lightTheme = {
     theme:"light",
     modalBackground: "linear-gradient(35deg, #d2d2d2, rgb(245, 245, 245))",
     li_BorderColor:"#bebebe",
-    svg_color:"#1d1d1d"
+    svg_color:"#1d1d1d",
+    option_modal:'#66666626',
+    option_modal_text:"#666",
+    url_bg:"#f3f3f3",
+    url_button_bg: "#e1e1e1",
+    url_button_border: "#66666640",
+    url_button_shadow: "2px 8px 20px #66666633",
+    textAreaShadow:"rgb(22 22 22 / 56%) 0px 0px 8px",
   };
   
   export const darkTheme = {
@@ -23,7 +30,14 @@ export const lightTheme = {
     theme:"dark",
     modalBackground: "linear-gradient(161deg, rgb(81, 81, 81), rgb(51, 51, 51))",
     li_BorderColor:"#929292",
-    svg_color:"#d1d1d1"
+    svg_color:"#d1d1d1",
+    option_modal:'#66666626',
+    option_modal_text:"#cccccc",
+    url_bg:"#3c3c3c",
+    url_button_bg: "#66666640",
+    url_button_border : "#66666685",
+    url_button_shadow: "2px 2px 2px #66666652",
+    textAreaShadow:"rgb(255 255 255 / 69%) 0px 0px 17px",
   };
-  
+
   export type themeType = typeof lightTheme

@@ -1,0 +1,25 @@
+.memo{
+    display: grid;
+    grid-template-columns: 30px auto 30px;
+    min-height: 30px;
+    align-items: center;
+}
+.memo>div:nth-child(2){
+    width: 100%;
+    height: 100%;
+}
+.memo>textarea{
+    background-color: transparent;
+    box-sizing: border-box;
+    width: 100%;
+    resize: none;
+    outline: none;
+    overflow-y: hidden;
+    font-size: 1.0rem;
+    height: auto;
+    text-align: start;
+    vertical-align: middle;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    letter-spacing: -1px;
+}

@@ -1,0 +1,13 @@
+.title-edit{
+    width: 100%;
+    padding-left: 30px;
+    font-size: 2rem;
+    font-weight: bold;
+    outline: none;
+    background-color: transparent;
+    overflow-wrap: break-word; 
+    resize: none;
+    overflow-y: hidden;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+}
