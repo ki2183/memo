@@ -63,4 +63,4 @@
 
 
 
-[프로젝트 GitHub 링크](https://github.com/ki2183/memo-vercel.git)
+[프로젝트 사이트 링크](https://github.com/ki2183/memo-vercel.git)
