@@ -58,9 +58,3 @@
 ### **메모 목록**
 - 메모 목록에서 작성한 메모를 확인하고 관리할 수 있습니다.
   ![목록](https://drive.google.com/uc?export=view&id=1vMb96UR7fCwpM31DuRQJIUBa_QdcHWAx)
-
-
-
-
-
-[프로젝트 사이트 링크](https://github.com/ki2183/memo-vercel.git)
