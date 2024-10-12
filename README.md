@@ -23,7 +23,7 @@
 
 회원가입 기능을 통해 계정을 생성하고 메모를 저장할 수 있습니다.
 
-![회원가입](https://drive.google.com/file/d/1y_5Mms3HJAl8yvDIa6soRLxugH71uQ-Z)
+![회원가입](https://drive.google.com/uc?export=view&id=1y_5Mms3HJAl8yvDIa6soRLxugH71uQ-Z)
 
 ### **로그인**
 
