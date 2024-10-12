@@ -29,18 +29,21 @@
 
 로그인 후 개인 계정에 메모를 저장하고 관리할 수 있습니다.
 
-![로그](https://drive.google.com/uc?export=view&id=1y_5Mms3HJAl8yvDIa6soRLxugH71uQ-Z)
+![로그인](https://drive.google.com/uc?export=view&id=1T2zAzUlDTUSBHRgEx-6IB7shUOu5K6hW)
 
 ### **텍스트 에디터**
 
 #### 글 쓰기
 
 - Enter 키로 새로운 블록을 추가하고, Backspace로 블록을 삭제할 수 있습니다.
-  ![엔터](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![추가삭제](https://drive.google.com/uc?export=view&id=1n_PYWHRDCVvGk5iZVGd-T_9j3YYcLTQu)
+
 - 방향키를 이용해 블록 간 이동이 가능합니다.
   ![이동](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  
 - 텍스트 사이에서 Enter를 누를 때 블록이 분할되고, 텍스트 맨 앞에서 Backspace를 누르면 이전 블록과 내용이 합쳐집니다.
-  ![분할](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![분할](https://drive.google.com/uc?export=view&id=1hDnkVHIkwxNxunv4LN-ns4p1j5pfjb_6)
+  
 
 #### 이미지 추가, 정렬 및 크기 조절
 
