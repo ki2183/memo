@@ -23,40 +23,40 @@
 
 회원가입 기능을 통해 계정을 생성하고 메모를 저장할 수 있습니다.
 
-![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+![회원가입](https://drive.google.com/file/d/1y_5Mms3HJAl8yvDIa6soRLxugH71uQ-Z/view?usp=sharing)
 
 ### **로그인**
 
 로그인 후 개인 계정에 메모를 저장하고 관리할 수 있습니다.
 
-![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+![로그인](https://drive.google.com/file/d/1T2zAzUlDTUSBHRgEx-6IB7shUOu5K6hW/view?usp=sharing)
 
 ### **텍스트 에디터**
 
 #### 글 쓰기
 
 - Enter 키로 새로운 블록을 추가하고, Backspace로 블록을 삭제할 수 있습니다.
-  ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![엔터](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 - 방향키를 이용해 블록 간 이동이 가능합니다.
-  ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![이동](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 - 텍스트 사이에서 Enter를 누를 때 블록이 분할되고, 텍스트 맨 앞에서 Backspace를 누르면 이전 블록과 내용이 합쳐집니다.
-  ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![분할](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 
 #### 이미지 추가, 정렬 및 크기 조절
 
 - 간단하게 이미지를 이미지 주소를 입력하여 구현할 수 있습니다.
-  ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![이미지 삽입](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 - 이미지 끝에 있는 옵션 버튼을 통해 정렬, 크기 조절 및 삭제가 가능합니다.
-  ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![정렬 크기조절](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 
 #### 이미지 드래그 앤 드랍
 
 - React-DND를 도입하여 이미지의 위치를 드래그 앤 드랍으로 변경할 수 있습니다. 이미지 위로 드랍하면 드랍한 이미지와 자리가 바뀌고, 텍스트 블록에 드랍하면 해당 텍스트 블록 아래 이미지가 추가됩니다.
- ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+ ![DND](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 
 ### **메모 목록**
 - 메모 목록에서 작성한 메모를 확인하고 관리할 수 있습니다.
- ![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+ ![목](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 
 
 [프로젝트 GitHub 링크](https://github.com/ki2183/memo-vercel.git)
