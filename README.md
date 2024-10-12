@@ -1,12 +1,5 @@
 # memo
 
-Make Text Editer
-
-![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
-
-
-# git memo md
-
 블록형 텍스트 에디터를 이용한 메모 사이트입니다.
 
 이 사이트는 사용자가 블록 기반의 텍스트 에디터를 통해 메모를 작성하고, 계정에 로그인하여 메모를 저장하고 관리할 수 있는 기능을 제공합니다. 작성된 메모는 언제든지 수정하거나 삭제할 수 있으며, 텍스트 블록 간의 이동, 병합, 분할 등의 편집 기능을 제공합니다.
@@ -33,6 +26,8 @@ Make Text Editer
 ### **로그인**
 
 로그인 후 개인 계정에 메모를 저장하고 관리할 수 있습니다.
+
+![프로젝트 데모](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
 
 ### **텍스트 에디터**
 
