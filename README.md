@@ -48,9 +48,10 @@
 #### 이미지 추가, 정렬 및 크기 조절
 
 - 간단하게 이미지를 이미지 주소를 입력하여 구현할 수 있습니다.
-  ![이미지 삽입](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![이미지 설명](https://drive.google.com/uc?export=view&id=1S-xI1T1IhVFFjUO7ySMlaHbNiCBoWyjV)
+
 - 이미지 끝에 있는 옵션 버튼을 통해 정렬, 크기 조절 및 삭제가 가능합니다.
-  ![정렬 크기조절](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+  ![정렬 크기조절](https://drive.google.com/uc?export=view&id=1bmRsw4GllNptVQPxyYOOfT9pbvYtTz4_)
 
 #### 이미지 드래그 앤 드랍
 
@@ -59,7 +60,7 @@
 
 ### **메모 목록**
 - 메모 목록에서 작성한 메모를 확인하고 관리할 수 있습니다.
- ![목](https://drive.google.com/uc?export=view&id=1ECYFB1PP2TP1DNoNk01VI_COVqKM6u4E)
+ ![목록](https://drive.google.com/uc?export=view&id=1vMb96UR7fCwpM31DuRQJIUBa_QdcHWAx)
 
 
 [프로젝트 GitHub 링크](https://github.com/ki2183/memo-vercel.git)
