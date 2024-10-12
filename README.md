@@ -47,22 +47,19 @@
 #### 이미지 추가, 정렬 및 크기 조절
 
 - 간단하게 이미지를 이미지 주소를 입력하여 구현할 수 있습니다.
-  
-
 - 이미지 끝에 있는 옵션 버튼을 통해 정렬, 크기 조절 및 삭제가 가능합니다.
-  
+  ![이미지 추가](https://drive.google.com/uc?export=view&id=1S-xI1T1IhVFFjUO7ySMlaHbNiCBoWyjV)
 
 #### 이미지 드래그 앤 드랍
 
 - React-DND를 도입하여 이미지의 위치를 드래그 앤 드랍으로 변경할 수 있습니다. 이미지 위로 드랍하면 드랍한 이미지와 자리가 바뀌고, 텍스트 블록에 드랍하면 해당 텍스트 블록 아래 이미지가 추가됩니다.
- 
+  ![dnd](https://drive.google.com/uc?export=view&id=1bmRsw4GllNptVQPxyYOOfT9pbvYtTz4_)
 
 ### **메모 목록**
 - 메모 목록에서 작성한 메모를 확인하고 관리할 수 있습니다.
+  ![목록](https://drive.google.com/uc?export=view&id=1vMb96UR7fCwpM31DuRQJIUBa_QdcHWAx)
 
- ![이미지 설명](https://drive.google.com/uc?export=view&id=1S-xI1T1IhVFFjUO7ySMlaHbNiCBoWyjV)
-![이미지 설명](https://drive.google.com/uc?export=view&id=1bmRsw4GllNptVQPxyYOOfT9pbvYtTz4_)
-![이미지 설명](https://drive.google.com/uc?export=view&id=1vMb96UR7fCwpM31DuRQJIUBa_QdcHWAx)
+
 
 
 
